@@ -1,5 +1,7 @@
 package com.lock.reentrant;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -9,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
  * @author onlyone
  * </pre>
  */
+@Slf4j
 public class ReentrantTest implements Runnable {
 
     /**
@@ -21,10 +24,10 @@ public class ReentrantTest implements Runnable {
     // 方法1
     public synchronized void m1() {
         String currentThreadName = Thread.currentThread().getName();
-        System.out.println(currentThreadName + ": 进入方法 m1-------");
+		log.debug(currentThreadName + ": 进入方法 m1-------");
         // 模拟执行业务
         try {
-            System.out.println(currentThreadName + ": 执行方法 m1 的业务！");
+			log.debug(currentThreadName + ": 执行方法 m1 的业务！");
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -38,9 +41,9 @@ public class ReentrantTest implements Runnable {
     // 方法2
     public synchronized void m2() {
         String currentThreadName = Thread.currentThread().getName();
-        System.out.println(currentThreadName + ": 进入方法 m2-------");
+		log.debug(currentThreadName + ": 进入方法 m2-------");
         try {
-            System.out.println(currentThreadName + ": 执行方法 m2 的业务！");
+			log.debug(currentThreadName + ": 执行方法 m2 的业务！");
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -77,7 +80,7 @@ public class ReentrantTest implements Runnable {
         countDownLatch.countDown();
 
         // 主线程阻塞，防止jvm提早退出
-        Thread.sleep(150000);
+		Thread.sleep(15000);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.lock.spin;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -7,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
  * 
  * @author onlyone
  */
+@Slf4j
 public class SpinLockTest implements Runnable {
 
     private SpinLock       spinLock;
@@ -30,7 +33,7 @@ public class SpinLockTest implements Runnable {
         spinLock.lock();
 
         String name = Thread.currentThread().getName();
-        System.out.println(name + " 已经获得锁！");
+		log.debug(name + " 已经获得锁！");
         // 模拟业务处理
         try {
             Thread.currentThread().sleep(1500);
@@ -40,7 +43,7 @@ public class SpinLockTest implements Runnable {
         }
 
         // 释放锁
-        System.out.println(name + " 处理完毕，并释放锁");
+		log.debug(name + " 处理完毕，并释放锁");
         spinLock.unlock();
 
     }
@@ -57,7 +60,7 @@ public class SpinLockTest implements Runnable {
         countDownLatch.countDown();
 
         // 主线程阻塞，防止jvm提早退出
-        Thread.sleep(150000);
+		Thread.sleep(15000);
 
     }
 

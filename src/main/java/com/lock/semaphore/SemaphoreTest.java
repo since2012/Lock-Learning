@@ -1,5 +1,7 @@
 package com.lock.semaphore;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -7,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
  * 
  * @author onlyone
  */
+@Slf4j
 public class SemaphoreTest implements Runnable {
 
     private ResourceManage resourceManage;
@@ -41,7 +44,7 @@ public class SemaphoreTest implements Runnable {
         countDownLatch.countDown();
 
         // 主线程阻塞，防止jvm提早退出
-        Thread.sleep(150000);
+		Thread.sleep(15000);
 
     }
 }

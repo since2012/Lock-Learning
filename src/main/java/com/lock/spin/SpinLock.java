@@ -1,5 +1,7 @@
 package com.lock.spin;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -7,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author onlyone
  */
+@Slf4j
 public class SpinLock {
 
     private AtomicBoolean ab = new AtomicBoolean(false);
