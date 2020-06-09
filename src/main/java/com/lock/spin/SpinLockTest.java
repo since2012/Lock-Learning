@@ -36,7 +36,7 @@ public class SpinLockTest implements Runnable {
 		log.debug(name + " 已经获得锁！");
         // 模拟业务处理
         try {
-            Thread.currentThread().sleep(1500);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

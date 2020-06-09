@@ -19,7 +19,7 @@
 
 	闭锁，确保一个服务不会开始，直到它依赖的其他服务都已近开始，它允许一个或多个线程，等待一个事件集的发生。
 	通过减计数的方式，控制多个线程同时开始某个动作。当计数为0时，await后的代码才会被执行。
-提供await（）和countDown（）两个方法。
+    提供await（）和countDown（）两个方法。
 
 * CyclicBarrier
 
@@ -27,12 +27,12 @@
 	
 	与CountdownLatch不同的是，它可以循环重用。
 
-TestCyclicBarrier
+CyclicBarrierTest
 
 * AtomicInteger
 
 	原子操作，线程安全。之前如果多线程累计计数，需要通过锁控制。
-IncrementAndGet方法，关键是调用了compareAndSwap方法，是native方法，基于cpu的CAS原语来实现的。简单原理是由cpu比较内存位置上的值是否为当前值，如果是换成新值，否则返回false
+IncrementAndGet方法，关键是调用了compareAndSwap方法，是native方法，基于cpu的**CAS原语来实现**的。简单原理是由cpu比较内存位置上的值是否为当前值，如果是换成新值，否则返回false
 
 * ThreadPoolExecutor
 
@@ -60,9 +60,6 @@ RejectExecutionHandler是针对任务无法处理时的一些自我保护处理�
 4.	CallerRuns 直接让原先的client thread做为消费线程，象同步调用方式一样，自己来执行。
 
 ```
-
- ![image](img/Snip20160701_52.png)
-
 
 **如何确定最大线程数？**
 
@@ -104,7 +101,6 @@ ScheduledThreadPoolExecutor可执行callable的task，执行完毕后得到执�
 
 	基于数组、先进先出、线程安全的集合
 
-
 * CopyOnWriteArrayList
 
 	线程安全，读操作时无锁的ArrayList。每次新增一个对象时，会将创建一个新的数组（长度+1），将之前的数组中的内容复制到新的数组中，并将新增的对象放入数组末尾。最后做引用切换。
@@ -116,8 +112,7 @@ ScheduledThreadPoolExecutor可执行callable的task，执行完毕后得到执�
 * ReentrantLock
 
 	单锁。控制并发的，和synchronized达到的效果是一致的。
-Lock方法，借助于CAS机制来控制锁。
-Unlock方法，释放锁
+Lock方法，借助于CAS机制来控制锁。Unlock方法，释放锁
 
 * ReentrantReadWriteLock
 
@@ -125,11 +120,6 @@ Unlock方法，释放锁
 	
 	持有读锁时，不能直接调用写锁的lock方法<br>
 	持有写锁时，其他线程的读或写都会被阻塞。
-	
-	ReentrantReadWriteLock  readLock=new ReentrantReadWriteLock();
-WriteLock  writeLock=readLock.writeLock();
-ReadLock   readLock=readLock.readLock();
-《分布式java应用》P165
 
 * 如何避免死锁
 

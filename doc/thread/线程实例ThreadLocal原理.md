@@ -50,33 +50,6 @@ ThreadLocalDemo
 
 ThreadLocal本身支持范型。该例使用了 StringBuilder 类型的 ThreadLocal 变量。可通过 ThreadLocal 的 get() 方法读取 StringBuidler 实例，也可通过 set(T value) 方法设置 StringBuilder。
 
-上述代码执行结果如下
-
-```
-Thread name:thread - 1 , ThreadLocal hashcode:372282300, Instance hashcode:418873098, Value:0
-Thread name:thread - 3 , ThreadLocal hashcode:372282300, Instance hashcode:1609588821, Value:0
-Thread name:thread - 2 , ThreadLocal hashcode:372282300, Instance hashcode:1780437710, Value:0
-Thread name:thread - 3 , ThreadLocal hashcode:372282300, Instance hashcode:1609588821, Value:01
-Thread name:thread - 1 , ThreadLocal hashcode:372282300, Instance hashcode:418873098, Value:01
-Thread name:thread - 3 , ThreadLocal hashcode:372282300, Instance hashcode:1609588821, Value:012
-Thread name:thread - 3 , ThreadLocal hashcode:372282300, Instance hashcode:1609588821, Value:0123
-Set, Thread name:thread - 3 , ThreadLocal hashcode:372282300,  Instance hashcode:1362597339, Value:hello world
-Thread name:thread - 2 , ThreadLocal hashcode:372282300, Instance hashcode:1780437710, Value:01
-Thread name:thread - 1 , ThreadLocal hashcode:372282300, Instance hashcode:418873098, Value:012
-Thread name:thread - 2 , ThreadLocal hashcode:372282300, Instance hashcode:1780437710, Value:012
-Thread name:thread - 1 , ThreadLocal hashcode:372282300, Instance hashcode:418873098, Value:0123
-Thread name:thread - 2 , ThreadLocal hashcode:372282300, Instance hashcode:1780437710, Value:0123
-Set, Thread name:thread - 1 , ThreadLocal hashcode:372282300,  Instance hashcode:482932940, Value:hello world
-Set, Thread name:thread - 2 , ThreadLocal hashcode:372282300,  Instance hashcode:1691922941, Value:hello world
-```
-
-从上面的输出可看出
-
-- 从第1-3行输出可见，每个线程通过 ThreadLocal 的 get() 方法拿到的是不同的 StringBuilder 实例
-- 第1-3行输出表明，每个线程所访问到的是同一个 ThreadLocal 变量
-- 从7、12、13行输出以及第30行代码可见，虽然从代码上都是对 Counter 类的静态 counter 字段进行 get() 得到 StringBuilder 实例并追加字符串，但是这并不会将所有线程追加的字符串都放进同一个 StringBuilder 中，而是每个线程将字符串追加进各自的 StringBuidler 实例内
-- 对比第1行与第15行输出并结合第38行代码可知，使用 set(T value) 方法后，ThreadLocal 变量所指向的 StringBuilder 实例被替换
-
 ## 原理
 
 #### 假想方案
@@ -160,14 +133,6 @@ public abstract class ThreadContext {
 ### InheritableThreadLocal
 
 InheritableThreadLocalDemo
-
-输出：
-
-```
-main = 123
-
-MyThread = 123
-```
 
 **子线程完美的使用了父线程的对象**，这是怎么实现的呢？
 
@@ -369,89 +334,10 @@ public void set(T value) {
 
 对于 Java Web 应用而言，Session 保存了很多信息。很多时候需要通过 Session 获取信息，有些时候又需要修改 Session 的信息。一方面，需要保证每个线程有自己单独的 Session 实例。另一方面，由于很多地方都需要操作 Session，存在多方法共享 Session 的需求。如果不使用 ThreadLocal，可以在每个线程内构建一个 Session实例，并将该实例在多个方法间传递，如下所示。
 
-```
-public class SessionHandler {
-
-  @Data
-  public static class Session {
-    private String id;
-    private String user;
-    private String status;
-  }
-
-  public Session createSession() {
-    return new Session();
-  }
-
-  public String getUser(Session session) {
-    return session.getUser();
-  }
-
-  public String getStatus(Session session) {
-    return session.getStatus();
-  }
-
-  public void setStatus(Session session, String status) {
-    session.setStatus(status);
-  }
-
-  public static void main(String[] args) {
-    new Thread(() -> {
-      SessionHandler handler = new SessionHandler();
-      Session session = handler.createSession();
-      handler.getStatus(session);
-      handler.getUser(session);
-      handler.setStatus(session, "close");
-      handler.getStatus(session);
-    }).start();
-  }
-}
-```
-
+SessionHandler
 该方法是可以实现需求的。但是每个需要使用 Session 的地方，都需要显式传递 Session 对象，方法间耦合度较高。
 
 这里使用 ThreadLocal 重新实现该功能如下所示。
-
-```
-public class SessionHandler {
-
-  public static ThreadLocal<Session> session = new ThreadLocal<Session>();
-
-  @Data
-  public static class Session {
-    private String id;
-    private String user;
-    private String status;
-  }
-
-  public void createSession() {
-    session.set(new Session());
-  }
-
-  public String getUser() {
-    return session.get().getUser();
-  }
-
-  public String getStatus() {
-    return session.get().getStatus();
-  }
-
-  public void setStatus(String status) {
-    session.get().setStatus(status);
-  }
-
-  public static void main(String[] args) {
-    new Thread(() -> {
-      SessionHandler handler = new SessionHandler();
-      handler.getStatus();
-      handler.getUser();
-      handler.setStatus("close");
-      handler.getStatus();
-    }).start();
-  }
-}
-```
-
 使用 ThreadLocal 改造后的代码，不再需要在各个方法间传递 Session 对象，并且也非常轻松的保证了每个线程拥有自己独立的实例。
 
 如果单看其中某一点，替代方法很多。比如可通过在线程内创建局部变量可实现每个线程有自己的实例，使用静态变量可实现变量在方法间的共享。但如果要同时满足变量在线程间的隔离与方法间的共享，ThreadLocal再合适不过。

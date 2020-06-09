@@ -20,71 +20,7 @@
 
 可重入锁最大的特点是避免死锁。
 
-```
-public class Test implements Runnable{
-
-	public synchronized void get(){
-		log.debug(Thread.currentThread().getId());
-		set();
-	}
-
-	public synchronized void set(){
-		log.debug(Thread.currentThread().getId());
-	}
-
-	@Override
-	public void run() {
-		get();
-	}
-	public static void main(String[] args) {
-		Test ss=new Test();
-		new Thread(ss).start();
-		new Thread(ss).start();
-		new Thread(ss).start();
-	}
-}
-
-返回结果：
-
-9
-9
-11
-11
-10
-10
-
-```
-
-```
-public class Test implements Runnable {
-	ReentrantLock readLock = new ReentrantLock();
-
-	public void get() {
-		readLock.readLock();
-		log.debug(Thread.currentThread().getId());
-		set();
-		readLock.unlock();
-	}
-
-	public void set() {
-		readLock.readLock();
-		log.debug(Thread.currentThread().getId());
-		readLock.unlock();
-	}
-
-	@Override
-	public void run() {
-		get();
-	}
-
-	public static void main(String[] args) {
-		Test ss = new Test();
-		new Thread(ss).start();
-		new Thread(ss).start();
-		new Thread(ss).start();
-	}
-}
-```
+SyncDemos,LockDemos
 
 2.信号量（Semaphore）
 
