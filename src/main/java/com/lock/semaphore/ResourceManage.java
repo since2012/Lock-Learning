@@ -13,28 +13,35 @@ public class ResourceManage {
 	private final ReentrantLock lock;
 
 	public ResourceManage(){
-		this.resourceArray = new boolean[10];// 存放厕所状态
-		this.semaphore = new Semaphore(10, true);// 控制10个共享资源的使用，使用先进先出的公平模式进行共享;公平模式的信号量，先来的先获得信号量
-		this.lock = new ReentrantLock(true);// 公平模式的锁，先来的先选
+		// 存放状态
+		this.resourceArray = new boolean[10];
+		// 控制10个共享资源的使用，使用先进先出的公平模式进行共享;公平模式的信号量，先来的先获得信号量
+		this.semaphore = new Semaphore(10, true);
+		// 公平模式的锁，先来的先选
+		this.lock = new ReentrantLock(true);
 		for (int i = 0; i < 10; i++) {
-			resourceArray[i] = true;// 初始化为资源可用的情况
+			// 初始化为资源可用的情况
+			resourceArray[i] = true;
 		}
 	}
 
 	public void useResource(int userId) {
 
 		try {
+			// 占到一个
 			semaphore.acquire();
 
-			// semaphore.acquire();
-			int id = getResourceId();// 占到一个坑
-			System.out.print("userId:" + userId + "正在使用资源，资源id:" + id + "\n");
-			Thread.sleep(100);// do something，相当于于使用资源
-			resourceArray[id] = true;// 退出这个坑
+			int id = getResourceId();
+			log.debug("userId:" + userId + "正在使用资源，资源id:" + id);
+			// do something，相当于于使用资源
+			Thread.sleep(100);
+			// 退出
+			resourceArray[id] = true;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			semaphore.release();// 释放信号量，计数器加1
+			// 释放信号量，计数器加1
+			semaphore.release();
 		}
 	}
 

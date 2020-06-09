@@ -29,7 +29,7 @@ https://github.com/aalansehaiyang/technology-talk/blob/master/system-architectur
 
 http://ifeve.com/java_lock_see4/
 
-代码示例：$Link {com.readLock.reentrant.ReentrantTest}
+代码示例：$Link {com.lock.reentrant.ReentrantTest}
 
 ####  自旋锁
 
@@ -39,7 +39,7 @@ http://ifeve.com/java_lock_see4/
 
 http://ifeve.com/java_lock_see1/
 
-代码示例：$Link {com.readLock.spin.SpinLockTest}
+代码示例：$Link {com.lock.spin.SpinLockTest}
 
 ####  独享锁
 
@@ -67,7 +67,7 @@ http://blog.csdn.net/yanyan19880509/article/details/52435135
 
 http://blog.csdn.net/eson_15/article/details/51553614
 
-代码示例：$Link {com.readLock.readwrite.ReentrantReadWriteLockTest}
+代码示例：$Link {com.lock.readwrite.ReentrantReadWriteLockTest}
 
 ####  阻塞锁
 
@@ -108,19 +108,19 @@ synchronized修饰非静态方法、同步代码块的synchronized (this)、sync
 
 http://blog.csdn.net/u013142781/article/details/51697672
 
-代码示例：$Link {com.readLock.object.SynchronizedMethod}
+代码示例：$Link {com.lock.object.SynchronizedMethod}
 
-代码示例：$Link {com.readLock.object.SynchronizedThis}
+代码示例：$Link {com.lock.object.SynchronizedThis}
 
-代码示例：$Link {com.readLock.object.SynchronizedObject}
+代码示例：$Link {com.lock.object.SynchronizedObject}
 
 ####  类锁
 
 synchronized修饰静态方法或者同步代码块的synchronized (类.class)，线程想要执行对应同步代码，需要获得类锁。
 
-代码示例：$Link {com.readLock.class1.SynchronizedStaticMethod}
+代码示例：$Link {com.lock.class1.SynchronizedStaticMethod}
 
-代码示例：$Link {com.readLock.class1.SynchronizedClass}
+代码示例：$Link {com.lock.class1.SynchronizedClass}
 
 ####  信号量
 
@@ -128,7 +128,7 @@ Semaphore是用来保护一个或者多个共享资源的访问，Semaphore内�
 
 如果计数器值为0,线程进入休眠。当某个线程使用完共享资源后，释放信号量，并将信号量内部的计数器加1，之前进入休眠的线程将被唤醒并再次试图获得信号量。
 
-代码示例：$Link {com.readLock.semaphore.SemaphoreTest}
+代码示例：$Link {com.lock.semaphore.SemaphoreTest}
 
 ####  条件变量Condition
 
@@ -143,7 +143,7 @@ Semaphore是用来保护一个或者多个共享资源的访问，Semaphore内�
 
 http://blog.csdn.net/vernonzheng/article/details/8288251
 
-代码示例：$Link {com.readLock.condition.ConditionDemo}
+代码示例：$Link {com.lock.condition.ConditionDemo}
 
 ####  行级锁
 
@@ -182,8 +182,6 @@ if (result)
 
 `在支付平台架构设计中，通常对交易和支付系统的流水表的状态流转的控制、对账户系统的状态控制，分账和退款余额的更新等，都推荐使用行级锁，而单独使用乐观锁和悲观锁是不推荐的。`
 
-
-
 ####  其它
 
 ```
@@ -199,7 +197,7 @@ ReentrantReadWriteLocK：默认非公平但可实现公平的(构造器传true)�
 
 ReentrantLock获取锁定有三种方式：
 
-* readLock()， 如果获取了锁立即返回，如果别的线程持有锁，当前线程则一直处于休眠状态，直到获取锁
+* lock()， 如果获取了锁立即返回，如果别的线程持有锁，当前线程则一直处于休眠状态，直到获取锁
  
 * tryLock()， 如果获取了锁立即返回true，如果别的线程正持有锁，立即返回false
 

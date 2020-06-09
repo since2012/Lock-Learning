@@ -22,17 +22,18 @@ public class SemaphoreTest implements Runnable {
         this.countDownLatch = countDownLatch;
     }
 
-    public void run() {
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+	@Override
+	public void run() {
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-        System.out.print("userId:" + userId + "准备使用资源...\n");
-        resourceManage.useResource(userId);
-        System.out.print("userId:" + userId + "使用资源完毕...\n");
-    }
+		log.debug("userId:" + userId + "准备使用资源...");
+		resourceManage.useResource(userId);
+		log.debug("userId:" + userId + "使用资源完毕...");
+	}
 
     public static void main(String[] args) throws InterruptedException {
         ResourceManage resourceManage = new ResourceManage();
