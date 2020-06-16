@@ -2,7 +2,10 @@ package org.mark.demo.safe;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @FileName LinkedBlockingQueueTest
@@ -22,7 +25,7 @@ public class LinkedBlockingQueueTest {
 
 		//启动异步线程，一直添加元素
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(4, 8, 2, TimeUnit.MINUTES,
-				new ArrayBlockingQueue(20), new ThreadPoolExecutor.AbortPolicy());
+				new LinkedBlockingQueue<>(20), new ThreadPoolExecutor.AbortPolicy());
 
 
 		for (int i = 0; i < 10; i++) {

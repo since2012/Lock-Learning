@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<!-- saved from url=(0046)http://www.jasongj.com/java/concurrenthashmap/ -->
+<html class="theme-next mist" lang="zh-CN">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<style id="znBdcsStyle" type="text/css">.bdcs-clearfix:after {
+		content: '';
+		display: block;
+		clear: both;
+		height: 0
+	}
+
+	.bdcs-clearfix {
+		zoom: 1
+	}
+
+	.bdcs-search-custom-sug, .bdcs-search-custom-sug * {
+		box-sizing: content-box;
+		margin: 0;
+		padding: 0;
+		float: none;
+		clear: none;
+		overflow: hidden;
+		white-space: nowrap;
+		word-wrap: normal;
+		border: 0;
+		background: 0 0;
+		width: auto;
+		height: auto;
+		max-width: none;
+		min-width: none;
+		max-height: none;
+		min-height: none;
+		border-radius: 0;
+		box-shadow: none;
+		transition: none;
+		text-align: left
+	}
+
+	.bdcs-search-custom-sug {
+		display: none;
+		position: absolute;
+		z-index: 2147483647
+	}
+
+	.bdcs-search-custom-sug-list {
+		list-style: none;
+		border: 1px solid #DDD;
+		background-color: #FFF
+	}
+
+	.bdcs-search-custom-sug-list {
+	}
+
+	.bdcs-search-custom-sug-list-item {
+		display: block;
+		list-style: none;
+		cursor: pointer;
+		padding: 0 5px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden
+	}
+
+	.bdcs-search-custom-sug-list-item-current {
+		background-color: #EBEBEB
+	}
+
+	.bdcs-search-custom-sug-list-item-author-novel, .bdcs-search-custom-sug-list-item-author-music, .bdcs-search-custom-sug-list-item-type-movie {
+		color: #BABABA
+	}
+
+	.bdcs-search-custom-sug-list-item-author-novel, .bdcs-search-custom-sug-list-item-author-music {
+		margin-left: 5px
+	}
+
+	.bdcs-search-custom-sug-list-item-music {
+		overflow: hidden;
+		*zoom: 1
+	}
+
+	.bdcs-search-custom-sug-list-item-value-movie {
+		float: left
+	}
+
+	.bdcs-search-custom-sug-list-item-type-movie {
+		float: right
+	}
+
+	.bdcs-search-custom-sug-skin {
+		display: none;
+		width: 85px;
+		height: 85px;
+		position: absolute;
+		right: 1px;
+		bottom: 1px
+	}
+
+	.bdcs-search-custom-sug-skin-img {
+		width: 85px;
+		height: 85px
+	}
+
+	.bdcs-search-custom-sug-i {
+		color: #e64fa3;
+		font-weight: 700;
+		margin-left: 10px;
+		font-family: simsun;
+		font-style: normal
+	}
+
+	.bdcs-search-custom-sug-adv {
+		width: 105px;
+		position: absolute;
+		right: 1px;
+		top: 1px;
+		display: none
+	}
+
+	.bdcs-search-custom-sug-adv-img {
+		position: absolute;
+		top: 0;
+		right: 0
+	}
+
+	.bdcs-search-custom-sug-list {
+		width: px;
+	}
+
+	.bdcs-search-custom-sug-list-item {
+		height: 28px;
+		line-height: 28px;
+		font-family: Arial, SimSun, sans-serif;
+		font-size: 14px;
+	}
+
+	.bdcs-search-custom-sug-list-item-value {
+		color: #000000;
+	}
+
+	.bdcs-custom-hot-item:hover {
+		background-color: #1a89ed;
+	}
+
+	.bdcs-custom-hot {
+		width: px;
+		height: 30px;
+		line-height: 30px;
+	}
+
+	.bdcs-custom-hot-item {
+		color: #000000;
+		font-family: Arial, Microsoft YaHei, sans-serif;
+		font-size: 14px;
+	}
+
+	#bdcs-rec {
+		display: none;
+	}</style>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+	<meta http-equiv="Cache-Control" content="no-transform">
+	<meta http-equiv="Cache-Control" content="no-siteapp">
+
+	<meta http-equiv="content-language" content="zh-cn">
+	<meta http-equiv="Window-target" content="_top">
+
+
+	<meta name="google-site-verification" content="_lpnaoq9f4n68-jMrHuEIsB1kJO_6WMxvONibOMBdxM">
+
+
+	<meta name="author" content="郭俊 Jason">
+
+
+	<link href="ConcurrentHashMap_files/jquery.fancybox.min.css" rel="stylesheet" type="text/css">
+
+
+	<link href="ConcurrentHashMap_files/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+	<link href="ConcurrentHashMap_files/main.css" rel="stylesheet" type="text/css">
+
+
+	<meta name="keywords" content="java,concurrenthashmap,java 8,CAS,多线程,并发,技术世界,郭俊 Jason,大数据架构">
+
+
+	<link rel="alternate" href="http://www.jasongj.com/atom.xml" title="技术世界" type="application/atom+xml">
+
+
+	<link rel="shortcut icon" type="image/x-icon" href="http://www.jasongj.com/img/sun.ico?v=5.1.0">
+
+
+	<meta name="description"
+		  content="本文分析了HashMap的实现原理，以及resize可能引起死循环和Fast-fail等线程不安全行为。同时结合源码从数据结构，寻址方式，同步方式，计算size等角度分析了JDK 1.7和JDK 1.8中ConcurrentHashMap的实现原理。">
+	<meta name="keywords" content="java,concurrenthashmap,java 8,CAS,多线程,并发,技术世界,郭俊 Jason,大数据架构">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术">
+	<meta property="og:url" content="http://www.jasongj.com/java/concurrenthashmap/index.html">
+	<meta property="og:site_name" content="技术世界">
+	<meta property="og:description"
+		  content="本文分析了HashMap的实现原理，以及resize可能引起死循环和Fast-fail等线程不安全行为。同时结合源码从数据结构，寻址方式，同步方式，计算size等角度分析了JDK 1.7和JDK 1.8中ConcurrentHashMap的实现原理。">
+	<meta property="og:locale" content="zh-CN">
+	<meta property="og:image" content="http://www.jasongj.com/img/java/concurrenthashmap/single_thread_rehash.png">
+	<meta property="og:image" content="http://www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_1.png">
+	<meta property="og:image" content="http://www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_2.png">
+	<meta property="og:image" content="http://www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_3.png">
+	<meta property="og:image" content="http://www.jasongj.com/img/java/concurrenthashmap/multi_thread_rehash_4.png">
+	<meta property="og:image" content="http://www.jasongj.com/img/java/concurrenthashmap/concurrenthashmap_java7.png">
+	<meta property="og:image" content="http://www.jasongj.com/img/java/concurrenthashmap/concurrenthashmap_java8.png">
+	<meta property="og:updated_time" content="2017-05-30T22:42:26.000Z">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术">
+	<meta name="twitter:description"
+		  content="本文分析了HashMap的实现原理，以及resize可能引起死循环和Fast-fail等线程不安全行为。同时结合源码从数据结构，寻址方式，同步方式，计算size等角度分析了JDK 1.7和JDK 1.8中ConcurrentHashMap的实现原理。">
+	<meta name="twitter:image" content="http://www.jasongj.com/img/java/concurrenthashmap/single_thread_rehash.png">
+
+
+	<script type="text/javascript" async="" src="ConcurrentHashMap_files/js"></script>
+	<script src="ConcurrentHashMap_files/push.js.下载"></script>
+	<script charset="utf-8" src="ConcurrentHashMap_files/s.js.下载"></script>
+	<script async="" src="ConcurrentHashMap_files/analytics.js.下载"></script>
+	<script type="text/javascript" id="hexo.configurations">
+		var NexT = window.NexT || {};
+		var CONFIG = {
+			root: '/',
+			scheme: 'Mist',
+			sidebar: {
+				"position": "left",
+				"display": "hide",
+				"offset": 12,
+				"offset_float": 0,
+				"b2t": false,
+				"scrollpercent": false
+			},
+			fancybox: true,
+			motion: false,
+			duoshuo: {
+				userId: 'undefined',
+				author: '博主'
+			},
+			algolia: {
+				applicationID: '',
+				apiKey: '',
+				indexName: '',
+				hits: {"per_page": 10},
+				labels: {
+					"input_placeholder": "Search for Posts",
+					"hits_empty": "We didn't find any results for the search: ${query}",
+					"hits_stats": "${hits} results found in ${time} ms"
+				}
+			}
+		};
+	</script>
+
+
+	<link rel="canonical" href="http://www.jasongj.com/java/concurrenthashmap/">
+
+
+	<title>
+
+		ConcurrentHashMap演进从Java7到Java8 | 技术世界 | java,concurrenthashmap,java 8,CAS,多线程,并发,技术世界,郭俊 Jason,大数据架构
+
+	</title>
+	<style type="text/css">.fancybox-margin {
+		margin-right: 11px;
+	}</style>
+	<style type="text/css">.MathJax_Hover_Frame {
+		border-radius: .25em;
+		-webkit-border-radius: .25em;
+		-moz-border-radius: .25em;
+		-khtml-border-radius: .25em;
+		box-shadow: 0px 0px 15px #83A;
+		-webkit-box-shadow: 0px 0px 15px #83A;
+		-moz-box-shadow: 0px 0px 15px #83A;
+		-khtml-box-shadow: 0px 0px 15px #83A;
+		border: 1px solid #A6D ! important;
+		display: inline-block;
+		position: absolute
+	}
+
+	.MathJax_Menu_Button .MathJax_Hover_Arrow {
+		position: absolute;
+		cursor: pointer;
+		display: inline-block;
+		border: 2px solid #AAA;
+		border-radius: 4px;
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+		-khtml-border-radius: 4px;
+		font-family: 'Courier New', Courier;
+		font-size: 9px;
+		color: #F0F0F0
+	}
+
+	.MathJax_Menu_Button .MathJax_Hover_Arrow span {
+		display: block;
+		background-color: #AAA;
+		border: 1px solid;
+		border-radius: 3px;
+		line-height: 0;
+		padding: 4px
+	}
+
+	.MathJax_Hover_Arrow:hover {
+		color: white !important;
+		border: 2px solid #CCC !important
+	}
+
+	.MathJax_Hover_Arrow:hover span {
+		background-color: #CCC !important
+	}
+	</style>
+	<style type="text/css">#MathJax_About {
+		position: fixed;
+		left: 50%;
+		width: auto;
+		text-align: center;
+		border: 3px outset;
+		padding: 1em 2em;
+		background-color: #DDDDDD;
+		color: black;
+		cursor: default;
+		font-family: message-box;
+		font-size: 120%;
+		font-style: normal;
+		text-indent: 0;
+		text-transform: none;
+		line-height: normal;
+		letter-spacing: normal;
+		word-spacing: normal;
+		word-wrap: normal;
+		white-space: nowrap;
+		float: none;
+		z-index: 201;
+		border-radius: 15px;
+		-webkit-border-radius: 15px;
+		-moz-border-radius: 15px;
+		-khtml-border-radius: 15px;
+		box-shadow: 0px 10px 20px #808080;
+		-webkit-box-shadow: 0px 10px 20px #808080;
+		-moz-box-shadow: 0px 10px 20px #808080;
+		-khtml-box-shadow: 0px 10px 20px #808080;
+		filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')
+	}
+
+	#MathJax_About.MathJax_MousePost {
+		outline: none
+	}
+
+	.MathJax_Menu {
+		position: absolute;
+		background-color: white;
+		color: black;
+		width: auto;
+		padding: 2px;
+		border: 1px solid #CCCCCC;
+		margin: 0;
+		cursor: default;
+		font: menu;
+		text-align: left;
+		text-indent: 0;
+		text-transform: none;
+		line-height: normal;
+		letter-spacing: normal;
+		word-spacing: normal;
+		word-wrap: normal;
+		white-space: nowrap;
+		float: none;
+		z-index: 201;
+		box-shadow: 0px 10px 20px #808080;
+		-webkit-box-shadow: 0px 10px 20px #808080;
+		-moz-box-shadow: 0px 10px 20px #808080;
+		-khtml-box-shadow: 0px 10px 20px #808080;
+		filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')
+	}
+
+	.MathJax_MenuItem {
+		padding: 2px 2em;
+		background: transparent
+	}
+
+	.MathJax_MenuArrow {
+		position: absolute;
+		right: .5em;
+		padding-top: .25em;
+		color: #666666;
+		font-size: .75em
+	}
+
+	.MathJax_MenuActive .MathJax_MenuArrow {
+		color: white
+	}
+
+	.MathJax_MenuArrow.RTL {
+		left: .5em;
+		right: auto
+	}
+
+	.MathJax_MenuCheck {
+		position: absolute;
+		left: .7em
+	}
+
+	.MathJax_MenuCheck.RTL {
+		right: .7em;
+		left: auto
+	}
+
+	.MathJax_MenuRadioCheck {
+		position: absolute;
+		left: 1em
+	}
+
+	.MathJax_MenuRadioCheck.RTL {
+		right: 1em;
+		left: auto
+	}
+
+	.MathJax_MenuLabel {
+		padding: 2px 2em 4px 1.33em;
+		font-style: italic
+	}
+
+	.MathJax_MenuRule {
+		border-top: 1px solid #CCCCCC;
+		margin: 4px 1px 0px
+	}
+
+	.MathJax_MenuDisabled {
+		color: GrayText
+	}
+
+	.MathJax_MenuActive {
+		background-color: Highlight;
+		color: HighlightText
+	}
+
+	.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {
+		background-color: #E8E8E8
+	}
+
+	.MathJax_ContextMenu:focus {
+		outline: none
+	}
+
+	.MathJax_ContextMenu .MathJax_MenuItem:focus {
+		outline: none
+	}
+
+	#MathJax_AboutClose {
+		top: .2em;
+		right: .2em
+	}
+
+	.MathJax_Menu .MathJax_MenuClose {
+		top: -10px;
+		left: -10px
+	}
+
+	.MathJax_MenuClose {
+		position: absolute;
+		cursor: pointer;
+		display: inline-block;
+		border: 2px solid #AAA;
+		border-radius: 18px;
+		-webkit-border-radius: 18px;
+		-moz-border-radius: 18px;
+		-khtml-border-radius: 18px;
+		font-family: 'Courier New', Courier;
+		font-size: 24px;
+		color: #F0F0F0
+	}
+
+	.MathJax_MenuClose span {
+		display: block;
+		background-color: #AAA;
+		border: 1.5px solid;
+		border-radius: 18px;
+		-webkit-border-radius: 18px;
+		-moz-border-radius: 18px;
+		-khtml-border-radius: 18px;
+		line-height: 0;
+		padding: 8px 0 6px
+	}
+
+	.MathJax_MenuClose:hover {
+		color: white !important;
+		border: 2px solid #CCC !important
+	}
+
+	.MathJax_MenuClose:hover span {
+		background-color: #CCC !important
+	}
+
+	.MathJax_MenuClose:hover:focus {
+		outline: none
+	}
+	</style>
+	<style type="text/css">.MathJax_Preview .MJXf-math {
+		color: inherit !important
+	}
+	</style>
+	<style type="text/css">.MJX_Assistive_MathML {
+		position: absolute !important;
+		top: 0;
+		left: 0;
+		clip: rect(1px, 1px, 1px, 1px);
+		padding: 1px 0 0 0 !important;
+		border: 0 !important;
+		height: 1px !important;
+		width: 1px !important;
+		overflow: hidden !important;
+		display: block !important;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none
+	}
+
+	.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {
+		width: 100% !important
+	}
+	</style>
+	<style type="text/css">#MathJax_Zoom {
+		position: absolute;
+		background-color: #F0F0F0;
+		overflow: auto;
+		display: block;
+		z-index: 301;
+		padding: .5em;
+		border: 1px solid black;
+		margin: 0;
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+		text-indent: 0;
+		text-transform: none;
+		line-height: normal;
+		letter-spacing: normal;
+		word-spacing: normal;
+		word-wrap: normal;
+		white-space: nowrap;
+		float: none;
+		-webkit-box-sizing: content-box;
+		-moz-box-sizing: content-box;
+		box-sizing: content-box;
+		box-shadow: 5px 5px 15px #AAAAAA;
+		-webkit-box-shadow: 5px 5px 15px #AAAAAA;
+		-moz-box-shadow: 5px 5px 15px #AAAAAA;
+		-khtml-box-shadow: 5px 5px 15px #AAAAAA;
+		filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')
+	}
+
+	#MathJax_ZoomOverlay {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 300;
+		display: inline-block;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		padding: 0;
+		margin: 0;
+		background-color: white;
+		opacity: 0;
+		filter: alpha(opacity=0)
+	}
+
+	#MathJax_ZoomFrame {
+		position: relative;
+		display: inline-block;
+		height: 0;
+		width: 0
+	}
+
+	#MathJax_ZoomEventTrap {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 302;
+		display: inline-block;
+		border: 0;
+		padding: 0;
+		margin: 0;
+		background-color: white;
+		opacity: 0;
+		filter: alpha(opacity=0)
+	}
+	</style>
+	<style type="text/css">.MathJax_Preview {
+		color: #888
+	}
+
+	#MathJax_Message {
+		position: fixed;
+		left: 1em;
+		bottom: 1.5em;
+		background-color: #E6E6E6;
+		border: 1px solid #959595;
+		margin: 0px;
+		padding: 2px 8px;
+		z-index: 102;
+		color: black;
+		font-size: 80%;
+		width: auto;
+		white-space: nowrap
+	}
+
+	#MathJax_MSIE_Frame {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 0px;
+		z-index: 101;
+		border: 0px;
+		margin: 0px;
+		padding: 0px
+	}
+
+	.MathJax_Error {
+		color: #CC0000;
+		font-style: italic
+	}
+	</style>
+	<style type="text/css">.MJXp-script {
+		font-size: .8em
+	}
+
+	.MJXp-right {
+		-webkit-transform-origin: right;
+		-moz-transform-origin: right;
+		-ms-transform-origin: right;
+		-o-transform-origin: right;
+		transform-origin: right
+	}
+
+	.MJXp-bold {
+		font-weight: bold
+	}
+
+	.MJXp-italic {
+		font-style: italic
+	}
+
+	.MJXp-scr {
+		font-family: MathJax_Script, 'Times New Roman', Times, STIXGeneral, serif
+	}
+
+	.MJXp-frak {
+		font-family: MathJax_Fraktur, 'Times New Roman', Times, STIXGeneral, serif
+	}
+
+	.MJXp-sf {
+		font-family: MathJax_SansSerif, 'Times New Roman', Times, STIXGeneral, serif
+	}
+
+	.MJXp-cal {
+		font-family: MathJax_Caligraphic, 'Times New Roman', Times, STIXGeneral, serif
+	}
+
+	.MJXp-mono {
+		font-family: MathJax_Typewriter, 'Times New Roman', Times, STIXGeneral, serif
+	}
+
+	.MJXp-largeop {
+		font-size: 150%
+	}
+
+	.MJXp-largeop.MJXp-int {
+		vertical-align: -.2em
+	}
+
+	.MJXp-math {
+		display: inline-block;
+		line-height: 1.2;
+		text-indent: 0;
+		font-family: 'Times New Roman', Times, STIXGeneral, serif;
+		white-space: nowrap;
+		border-collapse: collapse
+	}
+
+	.MJXp-display {
+		display: block;
+		text-align: center;
+		margin: 1em 0
+	}
+
+	.MJXp-math span {
+		display: inline-block
+	}
+
+	.MJXp-box {
+		display: block !important;
+		text-align: center
+	}
+
+	.MJXp-box:after {
+		content: " "
+	}
+
+	.MJXp-rule {
+		display: block !important;
+		margin-top: .1em
+	}
+
+	.MJXp-char {
+		display: block !important
+	}
+
+	.MJXp-mo {
+		margin: 0 .15em
+	}
+
+	.MJXp-mfrac {
+		margin: 0 .125em;
+		vertical-align: .25em
+	}
+
+	.MJXp-denom {
+		display: inline-table !important;
+		width: 100%
+	}
+
+	.MJXp-denom > * {
+		display: table-row !important
+	}
+
+	.MJXp-surd {
+		vertical-align: top
+	}
+
+	.MJXp-surd > * {
+		display: block !important
+	}
+
+	.MJXp-script-box > * {
+		display: table !important;
+		height: 50%
+	}
+
+	.MJXp-script-box > * > * {
+		display: table-cell !important;
+		vertical-align: top
+	}
+
+	.MJXp-script-box > *:last-child > * {
+		vertical-align: bottom
+	}
+
+	.MJXp-script-box > * > * > * {
+		display: block !important
+	}
+
+	.MJXp-mphantom {
+		visibility: hidden
+	}
+
+	.MJXp-munderover {
+		display: inline-table !important
+	}
+
+	.MJXp-over {
+		display: inline-block !important;
+		text-align: center
+	}
+
+	.MJXp-over > * {
+		display: block !important
+	}
+
+	.MJXp-munderover > * {
+		display: table-row !important
+	}
+
+	.MJXp-mtable {
+		vertical-align: .25em;
+		margin: 0 .125em
+	}
+
+	.MJXp-mtable > * {
+		display: inline-table !important;
+		vertical-align: middle
+	}
+
+	.MJXp-mtr {
+		display: table-row !important
+	}
+
+	.MJXp-mtd {
+		display: table-cell !important;
+		text-align: center;
+		padding: .5em 0 0 .5em
+	}
+
+	.MJXp-mtr > .MJXp-mtd:first-child {
+		padding-left: 0
+	}
+
+	.MJXp-mtr:first-child > .MJXp-mtd {
+		padding-top: 0
+	}
+
+	.MJXp-mlabeledtr {
+		display: table-row !important
+	}
+
+	.MJXp-mlabeledtr > .MJXp-mtd:first-child {
+		padding-left: 0
+	}
+
+	.MJXp-mlabeledtr:first-child > .MJXp-mtd {
+		padding-top: 0
+	}
+
+	.MJXp-merror {
+		background-color: #FFFF88;
+		color: #CC0000;
+		border: 1px solid #CC0000;
+		padding: 1px 3px;
+		font-style: normal;
+		font-size: 90%
+	}
+
+	.MJXp-scale0 {
+		-webkit-transform: scaleX(.0);
+		-moz-transform: scaleX(.0);
+		-ms-transform: scaleX(.0);
+		-o-transform: scaleX(.0);
+		transform: scaleX(.0)
+	}
+
+	.MJXp-scale1 {
+		-webkit-transform: scaleX(.1);
+		-moz-transform: scaleX(.1);
+		-ms-transform: scaleX(.1);
+		-o-transform: scaleX(.1);
+		transform: scaleX(.1)
+	}
+
+	.MJXp-scale2 {
+		-webkit-transform: scaleX(.2);
+		-moz-transform: scaleX(.2);
+		-ms-transform: scaleX(.2);
+		-o-transform: scaleX(.2);
+		transform: scaleX(.2)
+	}
+
+	.MJXp-scale3 {
+		-webkit-transform: scaleX(.3);
+		-moz-transform: scaleX(.3);
+		-ms-transform: scaleX(.3);
+		-o-transform: scaleX(.3);
+		transform: scaleX(.3)
+	}
+
+	.MJXp-scale4 {
+		-webkit-transform: scaleX(.4);
+		-moz-transform: scaleX(.4);
+		-ms-transform: scaleX(.4);
+		-o-transform: scaleX(.4);
+		transform: scaleX(.4)
+	}
+
+	.MJXp-scale5 {
+		-webkit-transform: scaleX(.5);
+		-moz-transform: scaleX(.5);
+		-ms-transform: scaleX(.5);
+		-o-transform: scaleX(.5);
+		transform: scaleX(.5)
+	}
+
+	.MJXp-scale6 {
+		-webkit-transform: scaleX(.6);
+		-moz-transform: scaleX(.6);
+		-ms-transform: scaleX(.6);
+		-o-transform: scaleX(.6);
+		transform: scaleX(.6)
+	}
+
+	.MJXp-scale7 {
+		-webkit-transform: scaleX(.7);
+		-moz-transform: scaleX(.7);
+		-ms-transform: scaleX(.7);
+		-o-transform: scaleX(.7);
+		transform: scaleX(.7)
+	}
+
+	.MJXp-scale8 {
+		-webkit-transform: scaleX(.8);
+		-moz-transform: scaleX(.8);
+		-ms-transform: scaleX(.8);
+		-o-transform: scaleX(.8);
+		transform: scaleX(.8)
+	}
+
+	.MJXp-scale9 {
+		-webkit-transform: scaleX(.9);
+		-moz-transform: scaleX(.9);
+		-ms-transform: scaleX(.9);
+		-o-transform: scaleX(.9);
+		transform: scaleX(.9)
+	}
+
+	.MathJax_PHTML .noError {
+		vertical-align: ;
+		font-size: 90%;
+		text-align: left;
+		color: black;
+		padding: 1px 3px;
+		border: 1px solid
+	}
+	</style>
+	<style>html #hm_t_undefined .hm-t-go-top {
+		position: fixed;
+		right: 2px;
+		bottom: 2px;
+		z-index: 99998;
+		cursor: pointer;
+		width: 40px;
+		height: 37px !important;
+		text-align: center;
+		white-space: normal;
+		font-size: 14px;
+		line-height: 17px;
+		padding-top: 3px;
+		color: #fff;
+		background: #404040;
+		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAAAXCAYAAABH92JbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMjgwMTE3NDA3MjA2ODExODA4M0UyNDA4ODdDRTZBQiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBQjc5RkRFNkI5ODMxMUUzQkZGNDhENEJFQjM2OTcyRiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBQjc5RkRFNUI5ODMxMUUzQkZGNDhENEJFQjM2OTcyRiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDI4MDExNzQwNzIwNjgxMTgwODNFMjQwODg3Q0U2QUIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MDI4MDExNzQwNzIwNjgxMTgwODNFMjQwODg3Q0U2QUIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5HPYM5AAACC0lEQVR42uyZTSgEYRjH90NoqaVcpDblvKW2XOSkNh8H5Yac9sBBDqQokiJKSMpNTi5OPo6Ktsgu67JcUHIXWfK1u3b8Xx6Zxuzu+64dM83uv34zNfu8b8/8Z+d5P8YqSZLFJNLsRmyWvIRMKgVD4AhEwA3YAV0pzGwEqyAEwmAddIICHe7FqhnsdQM14FxKLj+ooFiGE2ykiD8GVbJ4I1ELAnTmasMODnAhpVcIFIMicMgRH6Z4IxnUAh4pP3Zu5TVpUOLXDJgWiB8wkEF9IK7IL07X05oUFLjpZ4JXQQOYYwfzafJcoDjVPqw43KE4lWtUTF+AQ8eBqQSsgTaO2E0apJ7URrdCDZOM62hQJfBzGmShOD+1+2XSiYaJ7utkkBsEgEewnYfauZUmzWmU6DuY0sEgLzgArgzbu6i992cu/1WclqXsa1iHIt0DYlnKP0b9fRZu5pWdZs7dWXqa7B80+s//oF5aMSjflGqBPq5BQnFtVv4UmGHjIPEH96PAZ6C5kVMwf6daPzbFKnqCqvx9Bk/yFjSBFTMvcL+1DerAmUA/p9Rm1+y7AHJdgnqwx9EHm1s0gKtc2CpR6gE00/ZHMm3RKxbJlf0kNb2BDrCk8hsbDdvBay5tuiUTGxL7waTs2iLw0YTR9BLZQRwDUVqwjuTS9q3VRB8C1OQUnM6UqdXX/IcADn0IMADs2AqDOPSutQAAAABJRU5ErkJggg==) no-repeat -42px center #666;
+		*background-image: url(http://ecma.bdimg.com/holmes/t-popup-icons-png8.png);
+		_position: absolute;
+		_top: expression(eval(document.documentElement.scrollTop+(document.documentElement.clientHeight||document.body.clientHeight)-this.offsetHeight-2));
+	}</style>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN" class="" style="padding-right: 320px;">
+<div id="MathJax_Message" style="display: none;"></div>
+
+
+<script>
+	(function (i, s, o, g, r, a, m) {
+		i['GoogleAnalyticsObject'] = r;
+		i[r] = i[r] || function () {
+			(i[r].q = i[r].q || []).push(arguments)
+		}, i[r].l = 1 * new Date();
+		a = s.createElement(o),
+			m = s.getElementsByTagName(o)[0];
+		a.async = 1;
+		a.src = g;
+		m.parentNode.insertBefore(a, m)
+	})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+	ga('create', 'UA-58959834-1', 'auto');
+	ga('send', 'pageview');
+</script>
+
+<!--
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?7dfdf667ba885e2b04d1c1cc561490f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+-->
+
+<script type="text/javascript" async="" src="ConcurrentHashMap_files/hm.js.下载">
+</script>
+
+
+<div class="container sidebar-position-left page-post-detail ">
+	<div class="headband"></div>
+
+	<header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+		<div class="header-inner">
+			<div class="site-brand-wrapper">
+				<div class="site-meta ">
+
+
+					<div class="custom-logo-site-title">
+						<a href="http://www.jasongj.com/" class="brand" rel="start">
+							<span class="logo-line-before"><i></i></span>
+							<span class="site-title">技术世界</span>
+							<span class="logo-line-after"><i></i></span>
+						</a>
+					</div>
+
+					<h1 class="site-subtitle" itemprop="description">
+						分享交流大数据领域技术，包括但不限于Storm、Spark、Hadoop等流行分布式计算系统，Kafka、MetaQ等分布式消息系统，MongoDB、Cassandra等NoSQL，PostgreSQL、MySQL等RDBMS以及其它前沿技术</h1>
+
+				</div>
+
+				<div class="site-nav-toggle">
+					<button>
+						<span class="btn-bar"></span>
+						<span class="btn-bar"></span>
+						<span class="btn-bar"></span>
+					</button>
+				</div>
+			</div>
+
+			<nav class="site-nav">
+
+
+				<ul id="menu" class="menu">
+
+
+					<li class="menu-item menu-item-home">
+						<a href="http://www.jasongj.com/" rel="section">
+
+							<i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+
+							首页
+						</a>
+					</li>
+
+
+					<li class="menu-item menu-item-kafka">
+						<a href="http://www.jasongj.com/tags/Kafka/" rel="section">
+
+							<i class="menu-item-icon fa fa-fw fa-list"></i> <br>
+
+							Kafka
+						</a>
+					</li>
+
+
+					<li class="menu-item menu-item-spark">
+						<a href="http://www.jasongj.com/tags/Spark/" rel="section">
+
+							<i class="menu-item-icon fa fa-fw fa-life-bouy"></i> <br>
+
+							Spark
+						</a>
+					</li>
+
+
+					<li class="menu-item menu-item-big_data">
+						<a href="http://www.jasongj.com/tags/big-data/" rel="section">
+
+							<i class="menu-item-icon fa fa-fw fa-cloud"></i> <br>
+
+							大数据
+						</a>
+					</li>
+
+
+					<li class="menu-item menu-item-machine_learning">
+						<a href="http://www.jasongj.com/tags/machine-learning/" rel="section">
+
+							<i class="menu-item-icon fa fa-fw fa-cloud"></i> <br>
+
+							机器学习
+						</a>
+					</li>
+
+
+					<li class="menu-item menu-item-sql">
+						<a href="http://www.jasongj.com/tags/SQL/" rel="section">
+
+							<i class="menu-item-icon fa fa-fw fa-database"></i> <br>
+
+							SQL
+						</a>
+					</li>
+
+
+					<li class="menu-item menu-item-java">
+						<a href="http://www.jasongj.com/tags/Java/" rel="section">
+
+							<i class="menu-item-icon fa fa-fw fa-fire"></i> <br>
+
+							Java
+						</a>
+					</li>
+
+
+					<li class="menu-item menu-item-design_pattern">
+						<a href="http://www.jasongj.com/tags/Design-Pattern/" rel="section">
+
+							<i class="menu-item-icon fa fa-fw fa-diamond"></i> <br>
+
+							设计模式
+						</a>
+					</li>
+
+					<!--
+
+							<li class="menu-item menu-item-search">
+
+
+								  <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+
+								搜索
+							  </a>
+							</li>
+
+					-->
+				</ul>
+
+
+				<div class="site-search">
+
+					<!--
+				  <span class="menu-item-icon fa fa-search fa-fw"></span>
+				  -->
+					<form class="site-search-form" target="_blank" action="http://search.jasongj.com/cse/search"
+						  autocomplete="off">
+						<!--
+						  <input type="text" id="bdcsMain" name="q" value="搜索" onfocus="if(value == '搜索'){value=''}" onblur="if(value == ''){value='搜索'}"></input>
+						-->
+						<input type="text" id="bdcsMain" name="q" value="搜索本站"
+							   onfocus="if(value == &#39;搜索本站&#39;){value=&#39;&#39;}"
+							   onblur="if(value == &#39;&#39;){value=&#39;搜索本站&#39;}" autocomplete="off">
+						<input type="hidden" name="s" value="11273528160680594791">
+						<input type="hidden" name="entry" value="1">
+						<div></div>
+					</form>
+
+
+				</div>
+
+			</nav>
+
+
+		</div>
+	</header>
+
+	<main id="main" class="main">
+		<div class="main-inner">
+			<div class="content-wrap">
+				<div id="content" class="content">
+
+
+					<div id="posts" class="posts-expand">
+
+
+						<article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+							<link itemprop="mainEntityOfPage" href="http://www.jasongj.com/java/concurrenthashmap/">
+
+							<span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="郭俊 Jason">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="//www.jasongj.com/img/WeChat_QR.png">
+    </span>
+
+							<span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="技术世界">
+    </span>
+
+
+							<header class="post-header">
+
+
+								<h2 class="post-title" itemprop="name headline">
+
+
+									Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术
+
+
+								</h2>
+
+
+								<div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-31T06:42:26+08:00">
+                2017-05-31
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2017-05-31T06:42:26+08:00">
+                2017-05-31
+              </time>
+            
+          </span>
+
+
+									<span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="http://www.jasongj.com/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+
+
+									<span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <span data-disqus-url="http://www.jasongj.com/java/concurrenthashmap/"></span>
+                <a href="http://www.jasongj.com/java/concurrenthashmap/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论次数 </span>
+                  <span data-disqus-url="/java/concurrenthashmap/"></span>
+                  <span identifier="/java/concurrenthashmap/" id="disqus-page-comment-count"
+						class="post-comments-count disqus-comment-count" itemprop="commentCount"
+						target="_blank">22</span>
+                </a>
+              </span>
+
+
+									<span id="/java/concurrenthashmap/" class="leancloud_visitors"
+										  data-flag-title="Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count">31016</span>
+             </span>
+
+
+									<span class="post-meta-divider">|</span>
+									<span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+
+									<span class="post-meta-item-text">字数</span>
+
+									<span title="字数">
+                  6,687
+                </span>
+
+
+									<div class="post-description">
+										本文分析了HashMap的实现原理，以及resize可能引起死循环和Fast-fail等线程不安全行为。同时结合源码从数据结构，寻址方式，同步方式，计算size等角度分析了JDK
+										1.7和JDK 1.8中ConcurrentHashMap的实现原理。
+									</div>
+
+								</div>
+							</header>
+
+
+							<div class="post-body" itemprop="articleBody">
+
+
+								<blockquote>
+									<p>原创文章，转载请务必将下面这段话置于文章开头处（保留超链接）。<br>本文转发自<a
+											href="http://www.jasongj.com/"><strong>技术世界</strong></a>，<a
+											href="http://www.jasongj.com/java/concurrenthashmap/">原文链接</a>　<a
+											href="http://www.jasongj.com/java/concurrenthashmap/">http://www.jasongj.com/java/concurrenthashmap/</a>
+									</p>
+								</blockquote>
+								<h1 id="线程不安全的HashMap"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E7%BA%BF%E7%A8%8B%E4%B8%8D%E5%AE%89%E5%85%A8%E7%9A%84HashMap"
+										class="headerlink" title="线程不安全的HashMap"></a>线程不安全的HashMap</h1>
+								<p>众所周知，HashMap是非线程安全的。而HashMap的线程不安全主要体现在resize时的死循环及使用迭代器时的fast-fail上。</p>
+								<p>注：本章的代码均基于JDK 1.7.0_67</p>
+								<h2 id="HashMap工作原理"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"
+										class="headerlink" title="HashMap工作原理"></a>HashMap工作原理</h2>
+								<h3 id="HashMap数据结构"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#HashMap%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"
+										class="headerlink" title="HashMap数据结构"></a>HashMap数据结构</h3>
+								<p>常用的底层数据结构主要有数组和链表。数组存储区间连续，占用内存较多，寻址容易，插入和删除困难。链表存储区间离散，占用内存较少，寻址困难，插入和删除容易。</p>
+								<p>
+									HashMap要实现的是哈希表的效果，尽量实现O(1)级别的增删改查。它的具体实现则是同时使用了数组和链表，可以认为最外层是一个数组，数组的每个元素是一个链表的表头。</p>
+								<h3 id="HashMap寻址方式"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#HashMap%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"
+										class="headerlink" title="HashMap寻址方式"></a>HashMap寻址方式</h3>
+								<p>
+									对于新插入的数据或者待读取的数据，HashMap将Key的哈希值对数组长度取模，结果作为该Entry在数组中的index。在计算机中，取模的代价远高于位操作的代价，因此HashMap要求数组的长度必须为2的N次方。此时将Key的哈希值对2^N-1进行与运算，其效果即与取模等效。HashMap并不要求用户在指定HashMap容量时必须传入一个2的N次方的整数，而是会通过Integer.highestOneBit算出比指定整数大的最小的2^N值，其实现方法如下。<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br><span class="line">4</span><br><span
+														class="line">5</span><br><span class="line">6</span><br><span
+														class="line">7</span><br><span class="line">8</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span class="function"><span class="keyword">public</span> <span
+														class="keyword">static</span> <span
+														class="keyword">int</span> <span
+														class="title">highestOneBit</span><span class="params">(<span
+														class="keyword">int</span> i)</span> </span>{</span><br><span
+														class="line">  i |= (i &gt;&gt;  <span class="number">1</span>);</span><br><span
+														class="line">  i |= (i &gt;&gt;  <span class="number">2</span>);</span><br><span
+														class="line">  i |= (i &gt;&gt;  <span class="number">4</span>);</span><br><span
+														class="line">  i |= (i &gt;&gt;  <span class="number">8</span>);</span><br><span
+														class="line">  i |= (i &gt;&gt; <span class="number">16</span>);</span><br><span
+														class="line">  <span class="keyword">return</span> i - (i &gt;&gt;&gt; <span
+														class="number">1</span>);</span><br><span
+														class="line">}</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<p>
+									由于Key的哈希值的分布直接决定了所有数据在哈希表上的分布或者说决定了哈希冲突的可能性，因此为防止糟糕的Key的hashCode实现（例如低位都相同，只有高位不相同，与2^N-1取与后的结果都相同），JDK
+									1.7的HashMap通过如下方法使得最终的哈希值的二进制形式中的1尽量均匀分布从而尽可能减少哈希冲突。<br></p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br><span class="line">4</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span
+														class="keyword">int</span> h = hashSeed;</span><br><span
+														class="line">h ^= k.hashCode();</span><br><span class="line">h ^= (h &gt;&gt;&gt; <span
+														class="number">20</span>) ^ (h &gt;&gt;&gt; <span
+														class="number">12</span>);</span><br><span class="line"><span
+														class="keyword">return</span> h ^ (h &gt;&gt;&gt; <span
+														class="number">7</span>) ^ (h &gt;&gt;&gt; <span class="number">4</span>);</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<h2 id="resize死循环"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#resize%E6%AD%BB%E5%BE%AA%E7%8E%AF"
+										class="headerlink" title="resize死循环"></a>resize死循环</h2>
+								<h3 id="transfer方法"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#transfer%E6%96%B9%E6%B3%95"
+										class="headerlink" title="transfer方法"></a>transfer方法</h3>
+								<p>
+									当HashMap的size超过Capacity*loadFactor时，需要对HashMap进行扩容。具体方法是，创建一个新的，长度为原来Capacity两倍的数组，保证新的Capacity仍为2的N次方，从而保证上述寻址方式仍适用。同时需要通过如下transfer方法将原来的所有数据全部重新插入（rehash）到新的数组中。<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br><span class="line">4</span><br><span
+														class="line">5</span><br><span class="line">6</span><br><span
+														class="line">7</span><br><span class="line">8</span><br><span
+														class="line">9</span><br><span class="line">10</span><br><span
+														class="line">11</span><br><span class="line">12</span><br><span
+														class="line">13</span><br><span class="line">14</span><br><span
+														class="line">15</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span class="function"><span class="keyword">void</span> <span
+														class="title">transfer</span><span class="params">(Entry[] newTable, <span
+														class="keyword">boolean</span> rehash)</span> </span>{</span><br><span
+														class="line">  <span class="keyword">int</span> newCapacity = newTable.length;</span><br><span
+														class="line">  <span class="keyword">for</span> (Entry&lt;K,V&gt; e : table) {</span><br><span
+														class="line">    <span class="keyword">while</span>(<span
+														class="keyword">null</span> != e) {</span><br><span
+														class="line">      Entry&lt;K,V&gt; next = e.next;</span><br><span
+														class="line">      <span
+														class="keyword">if</span> (rehash) {</span><br><span
+														class="line">        e.hash = <span class="keyword">null</span> == e.key ? <span
+														class="number">0</span> : hash(e.key);</span><br><span
+														class="line">      }</span><br><span class="line">      <span
+														class="keyword">int</span> i = indexFor(e.hash, newCapacity);</span><br><span
+														class="line">      e.next = newTable[i];</span><br><span
+														class="line">      newTable[i] = e;</span><br><span
+														class="line">      e = next;</span><br><span
+														class="line">    }</span><br><span
+														class="line">  }</span><br><span class="line">}</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<p>该方法并不保证线程安全，而且在多线程并发调用时，可能出现死循环。其执行过程如下。从步骤2可见，转移时链表顺序反转。</p>
+								<ol>
+									<li>遍历原数组中的元素</li>
+									<li>对链表上的每一个节点遍历：用next取得要转移那个元素的下一个，将e转移到新数组的头部，使用头插法插入节点</li>
+									<li>循环2，直到链表节点全部转移</li>
+									<li>循环1，直到所有元素全部转移</li>
+								</ol>
+								<h3 id="单线程rehash"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E5%8D%95%E7%BA%BF%E7%A8%8Brehash"
+										class="headerlink" title="单线程rehash"></a>单线程rehash</h3>
+								<p>单线程情况下，rehash无问题。下图演示了单线程条件下的rehash过程<br><a
+										href="ConcurrentHashMap_files/single_thread_rehash.png"
+										class="fancybox fancybox.image" rel="group"><img
+										src="ConcurrentHashMap_files/single_thread_rehash.png"
+										alt="HashMap rehash single thread"></a></p>
+								<h3 id="多线程并发下的rehash"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91%E4%B8%8B%E7%9A%84rehash"
+										class="headerlink" title="多线程并发下的rehash"></a>多线程并发下的rehash</h3>
+								<p>这里假设有两个线程同时执行了put操作并引发了rehash，执行了transfer方法，并假设线程一进入transfer方法并执行完next =
+									e.next后，因为线程调度所分配时间片用完而“暂停”，此时线程二完成了transfer方法的执行。此时状态如下。</p>
+								<p><a href="ConcurrentHashMap_files/multi_thread_rehash_1.png"
+									  class="fancybox fancybox.image" rel="group"><img
+										src="ConcurrentHashMap_files/multi_thread_rehash_1.png"
+										alt="HashMap rehash multi thread step 1"></a></p>
+								<p>接着线程1被唤醒，继续执行第一轮循环的剩余部分<br></p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line">e.next = newTable[<span class="number">1</span>] = <span
+														class="keyword">null</span></span><br><span class="line">newTable[<span
+														class="number">1</span>] = e = key(<span class="number">5</span>)</span><br><span
+														class="line">e = next = key(<span
+														class="number">9</span>)</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<p>结果如下图所示<br><a href="ConcurrentHashMap_files/multi_thread_rehash_2.png"
+												 class="fancybox fancybox.image" rel="group"><img
+										src="ConcurrentHashMap_files/multi_thread_rehash_2.png"
+										alt="HashMap rehash multi thread step 2"></a></p>
+								<p>接着执行下一轮循环，结果状态图如下所示<br><a href="ConcurrentHashMap_files/multi_thread_rehash_3.png"
+															 class="fancybox fancybox.image" rel="group"><img
+										src="ConcurrentHashMap_files/multi_thread_rehash_3.png"
+										alt="HashMap rehash multi thread step 3"></a></p>
+								<p>继续下一轮循环，结果状态图如下所示<br><a href="ConcurrentHashMap_files/multi_thread_rehash_4.png"
+														   class="fancybox fancybox.image" rel="group"><img
+										src="ConcurrentHashMap_files/multi_thread_rehash_4.png"
+										alt="HashMap rehash multi thread step 4"></a></p>
+								<p>此时循环链表形成，并且key(11)无法加入到线程1的新数组。在下一次访问该链表时会出现死循环。</p>
+								<h2 id="Fast-fail"><a href="http://www.jasongj.com/java/concurrenthashmap/#Fast-fail"
+													  class="headerlink" title="Fast-fail"></a>Fast-fail</h2>
+								<h3 id="产生原因"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0"
+										class="headerlink" title="产生原因"></a>产生原因</h3>
+								<p>在使用迭代器的过程中如果HashMap被修改，那么<code>ConcurrentModificationException</code>将被抛出，也即Fast-fail策略。
+								</p>
+								<p>
+									当HashMap的iterator()方法被调用时，会构造并返回一个新的EntryIterator对象，并将EntryIterator的expectedModCount设置为HashMap的modCount（该变量记录了HashMap被修改的次数）。<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br><span class="line">4</span><br><span
+														class="line">5</span><br><span class="line">6</span><br><span
+														class="line">7</span><br><span class="line">8</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line">HashIterator() {</span><br><span class="line">  expectedModCount = modCount;</span><br><span
+														class="line">  <span class="keyword">if</span> (size &gt; <span
+														class="number">0</span>) { <span class="comment">// advance to first entry</span></span><br><span
+														class="line">  Entry[] t = table;</span><br><span class="line">  <span
+														class="keyword">while</span> (index &lt; t.length &amp;&amp; (next = t[index++]) == <span
+														class="keyword">null</span>)</span><br><span
+														class="line">    ;</span><br><span
+														class="line">  }</span><br><span class="line">}</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<p>
+									在通过该Iterator的next方法访问下一个Entry时，它会先检查自己的expectedModCount与HashMap的modCount是否相等，如果不相等，说明HashMap被修改，直接抛出<code>ConcurrentModificationException</code>。该Iterator的remove方法也会做类似的检查。该异常的抛出意在提醒用户及早意识到线程安全问题。
+								</p>
+								<h3 id="线程安全解决方案"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"
+										class="headerlink" title="线程安全解决方案"></a>线程安全解决方案</h3>
+								<p>单线程条件下，为避免出现<code>ConcurrentModificationException</code>，需要保证只通过HashMap本身或者只通过Iterator去修改数据，不能在Iterator使用结束之前使用HashMap本身的方法修改数据。因为通过Iterator删除数据时，HashMap的modCount和Iterator的expectedModCount都会自增，不影响二者的相等性。如果是增加数据，只能通过HashMap本身的方法完成，此时如果要继续遍历数据，需要重新调用iterator()方法从而重新构造出一个新的Iterator，使得新Iterator的expectedModCount与更新后的HashMap的modCount相等。
+								</p>
+								<p>多线程条件下，可使用<code>Collections.synchronizedMap</code>方法构造出一个同步Map，或者直接使用线程安全的ConcurrentHashMap。
+								</p>
+								<h1 id="Java-7基于分段锁的ConcurrentHashMap"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#Java-7%E5%9F%BA%E4%BA%8E%E5%88%86%E6%AE%B5%E9%94%81%E7%9A%84ConcurrentHashMap"
+										class="headerlink" title="Java 7基于分段锁的ConcurrentHashMap"></a>Java
+									7基于分段锁的ConcurrentHashMap</h1>
+								<p>注：本章的代码均基于JDK 1.7.0_67</p>
+								<h2 id="数据结构"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"
+										class="headerlink" title="数据结构"></a>数据结构</h2>
+								<p>Java
+									7中的ConcurrentHashMap的底层数据结构仍然是数组和链表。与HashMap不同的是，ConcurrentHashMap最外层不是一个大的数组，而是一个Segment的数组。每个Segment包含一个与HashMap数据结构差不多的链表数组。整体数据结构如下图所示。<br><a
+											href="ConcurrentHashMap_files/concurrenthashmap_java7.png"
+											class="fancybox fancybox.image" rel="group"><img
+											src="ConcurrentHashMap_files/concurrenthashmap_java7.png"
+											alt="JAVA 7 ConcurrentHashMap"></a></p>
+								<h2 id="寻址方式"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"
+										class="headerlink" title="寻址方式"></a>寻址方式</h2>
+								<p>
+									在读写某个Key时，先取该Key的哈希值。并将哈希值的高N位对Segment个数取模从而得到该Key应该属于哪个Segment，接着如同操作HashMap一样操作这个Segment。为了保证不同的值均匀分布到不同的Segment，需要通过如下方法计算哈希值。<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br><span class="line">4</span><br><span
+														class="line">5</span><br><span class="line">6</span><br><span
+														class="line">7</span><br><span class="line">8</span><br><span
+														class="line">9</span><br><span class="line">10</span><br><span
+														class="line">11</span><br><span class="line">12</span><br><span
+														class="line">13</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span class="function"><span class="keyword">private</span> <span
+														class="keyword">int</span> <span class="title">hash</span><span
+														class="params">(Object k)</span> </span>{</span><br><span
+														class="line">  <span
+														class="keyword">int</span> h = hashSeed;</span><br><span
+														class="line">  <span class="keyword">if</span> ((<span
+														class="number">0</span> != h) &amp;&amp; (k <span
+														class="keyword">instanceof</span> String)) {</span><br><span
+														class="line">    <span class="keyword">return</span> sun.misc.Hashing.stringHash32((String) k);</span><br><span
+														class="line">  }</span><br><span class="line">  h ^= k.hashCode();</span><br><span
+														class="line">  h += (h &lt;&lt;  <span class="number">15</span>) ^ <span
+														class="number">0xffffcd7d</span>;</span><br><span class="line">  h ^= (h &gt;&gt;&gt; <span
+														class="number">10</span>);</span><br><span class="line">  h += (h &lt;&lt;   <span
+														class="number">3</span>);</span><br><span class="line">  h ^= (h &gt;&gt;&gt;  <span
+														class="number">6</span>);</span><br><span class="line">  h += (h &lt;&lt;   <span
+														class="number">2</span>) + (h &lt;&lt; <span
+														class="number">14</span>);</span><br><span class="line">  <span
+														class="keyword">return</span> h ^ (h &gt;&gt;&gt; <span
+														class="number">16</span>);</span><br><span class="line">}</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<p>
+									同样为了提高取模运算效率，通过如下计算，ssize即为大于concurrencyLevel的最小的2的N次方，同时segmentMask为2^N-1。这一点跟上文中计算数组长度的方法一致。对于某一个Key的哈希值，只需要向右移segmentShift位以取高sshift位，再与segmentMask取与操作即可得到它在Segment数组上的索引。<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br><span class="line">4</span><br><span
+														class="line">5</span><br><span class="line">6</span><br><span
+														class="line">7</span><br><span class="line">8</span><br><span
+														class="line">9</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span class="keyword">int</span> sshift = <span
+														class="number">0</span>;</span><br><span class="line"><span
+														class="keyword">int</span> ssize = <span class="number">1</span>;</span><br><span
+														class="line"><span class="keyword">while</span> (ssize &lt; concurrencyLevel) {</span><br><span
+														class="line">  ++sshift;</span><br><span class="line">  ssize &lt;&lt;= <span
+														class="number">1</span>;</span><br><span
+														class="line">}</span><br><span class="line"><span
+														class="keyword">this</span>.segmentShift = <span class="number">32</span> - sshift;</span><br><span
+														class="line"><span class="keyword">this</span>.segmentMask = ssize - <span
+														class="number">1</span>;</span><br><span class="line">Segment&lt;K,V&gt;[] ss = (Segment&lt;K,V&gt;[])<span
+														class="keyword">new</span> Segment[ssize];</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<h2 id="同步方式"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F"
+										class="headerlink" title="同步方式"></a>同步方式</h2>
+								<p>Segment继承自ReentrantLock，所以我们可以很方便的对每一个Segment上锁。</p>
+								<p>对于读操作，获取Key所在的Segment时，需要保证可见性(请参考<a
+										href="http://www.jasongj.com/java/thread_safe/#Java%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E5%8F%AF%E8%A7%81%E6%80%A7">如何保证多线程条件下的可见性</a>)。具体实现上可以使用volatile关键字，也可使用锁。但使用锁开销太大，而使用volatile时每次写操作都会让所有CPU内缓存无效，也有一定开销。ConcurrentHashMap使用如下方法保证可见性，取得最新的Segment。<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line">Segment&lt;K,V&gt; s = (Segment&lt;K,V&gt;)UNSAFE.getObjectVolatile(segments, u)</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<p>获取Segment中的HashEntry时也使用了类似方法<br></p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span
+														class="line">2</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line">HashEntry&lt;K,V&gt; e = (HashEntry&lt;K,V&gt;) UNSAFE.getObjectVolatile</span><br><span
+														class="line">  (tab, ((<span class="keyword">long</span>)(((tab.length - <span
+														class="number">1</span>) &amp; h)) &lt;&lt; TSHIFT) + TBASE)</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<p>
+									对于写操作，并不要求同时获取所有Segment的锁，因为那样相当于锁住了整个Map。它会先获取该Key-Value对所在的Segment的锁，获取成功后就可以像操作一个普通的HashMap一样操作该Segment，并保证该Segment的安全性。<br>同时由于其它Segment的锁并未被获取，因此理论上可支持concurrencyLevel（等于Segment的个数）个线程安全的并发读写。
+								</p>
+								<p>获取锁时，并不直接使用lock来获取，因为该方法获取锁失败时会挂起（参考<a
+										href="http://www.jasongj.com/java/multi_thread/#%E9%87%8D%E5%85%A5%E9%94%81">可重入锁</a>）。事实上，它使用了自旋锁，如果tryLock获取锁失败，说明锁被其它线程占用，此时通过循环再次以tryLock的方式申请锁。如果在循环过程中该Key所对应的链表头被修改，则重置retry次数。如果retry次数超过一定值，则使用lock方法申请锁。
+								</p>
+								<p>这里使用自旋锁是因为自旋锁的效率比较高，但是它消耗CPU资源比较多，因此在自旋次数超过阈值时切换为互斥锁。</p>
+								<h2 id="size操作"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#size%E6%93%8D%E4%BD%9C"
+										class="headerlink" title="size操作"></a>size操作</h2>
+								<p>
+									put、remove和get操作只需要关心一个Segment，而size操作需要遍历所有的Segment才能算出整个Map的大小。一个简单的方案是，先锁住所有Sgment，计算完后再解锁。但这样做，在做size操作时，不仅无法对Map进行写操作，同时也无法进行读操作，不利于对Map的并行操作。</p>
+								<p>
+									为更好支持并发操作，ConcurrentHashMap会在不上锁的前提逐个Segment计算3次size，如果某相邻两次计算获取的所有Segment的更新次数（每个Segment都与HashMap一样通过modCount跟踪自己的修改次数，Segment每修改一次其modCount加一）相等，说明这两次计算过程中无更新操作，则这两次计算出的总size相等，可直接作为最终结果返回。如果这三次计算过程中Map有更新，则对所有Segment加锁重新计算Size。该计算方法代码如下<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br><span class="line">4</span><br><span
+														class="line">5</span><br><span class="line">6</span><br><span
+														class="line">7</span><br><span class="line">8</span><br><span
+														class="line">9</span><br><span class="line">10</span><br><span
+														class="line">11</span><br><span class="line">12</span><br><span
+														class="line">13</span><br><span class="line">14</span><br><span
+														class="line">15</span><br><span class="line">16</span><br><span
+														class="line">17</span><br><span class="line">18</span><br><span
+														class="line">19</span><br><span class="line">20</span><br><span
+														class="line">21</span><br><span class="line">22</span><br><span
+														class="line">23</span><br><span class="line">24</span><br><span
+														class="line">25</span><br><span class="line">26</span><br><span
+														class="line">27</span><br><span class="line">28</span><br><span
+														class="line">29</span><br><span class="line">30</span><br><span
+														class="line">31</span><br><span class="line">32</span><br><span
+														class="line">33</span><br><span class="line">34</span><br><span
+														class="line">35</span><br><span class="line">36</span><br><span
+														class="line">37</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span class="function"><span class="keyword">public</span> <span
+														class="keyword">int</span> <span class="title">size</span><span
+														class="params">()</span> </span>{</span><br><span class="line">  <span
+														class="keyword">final</span> Segment&lt;K,V&gt;[] segments = <span
+														class="keyword">this</span>.segments;</span><br><span
+														class="line">  <span class="keyword">int</span> size;</span><br><span
+														class="line">  <span
+														class="keyword">boolean</span> overflow; <span class="comment">// true if size overflows 32 bits</span></span><br><span
+														class="line">  <span
+														class="keyword">long</span> sum;         <span class="comment">// sum of modCounts</span></span><br><span
+														class="line">  <span class="keyword">long</span> last = <span
+														class="number">0L</span>;   <span class="comment">// previous sum</span></span><br><span
+														class="line">  <span class="keyword">int</span> retries = -<span
+														class="number">1</span>; <span class="comment">// first iteration isn't retry</span></span><br><span
+														class="line">  <span
+														class="keyword">try</span> {</span><br><span
+														class="line">    <span
+														class="keyword">for</span> (;;) {</span><br><span class="line">      <span
+														class="keyword">if</span> (retries++ == RETRIES_BEFORE_LOCK) {</span><br><span
+														class="line">        <span class="keyword">for</span> (<span
+														class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j)</span><br><span
+														class="line">          ensureSegment(j).lock(); <span
+														class="comment">// force creation</span></span><br><span
+														class="line">      }</span><br><span
+														class="line">      sum = <span
+														class="number">0L</span>;</span><br><span class="line">      size = <span
+														class="number">0</span>;</span><br><span class="line">      overflow = <span
+														class="keyword">false</span>;</span><br><span class="line">      <span
+														class="keyword">for</span> (<span class="keyword">int</span> j = <span
+														class="number">0</span>; j &lt; segments.length; ++j) {</span><br><span
+														class="line">        Segment&lt;K,V&gt; seg = segmentAt(segments, j);</span><br><span
+														class="line">        <span
+														class="keyword">if</span> (seg != <span
+														class="keyword">null</span>) {</span><br><span class="line">          sum += seg.modCount;</span><br><span
+														class="line">          <span class="keyword">int</span> c = seg.count;</span><br><span
+														class="line">          <span
+														class="keyword">if</span> (c &lt; <span class="number">0</span> || (size += c) &lt; <span
+														class="number">0</span>)</span><br><span class="line">            overflow = <span
+														class="keyword">true</span>;</span><br><span class="line">        }</span><br><span
+														class="line">      }</span><br><span class="line">      <span
+														class="keyword">if</span> (sum == last)</span><br><span
+														class="line">        <span
+														class="keyword">break</span>;</span><br><span class="line">      last = sum;</span><br><span
+														class="line">    }</span><br><span class="line">  } <span
+														class="keyword">finally</span> {</span><br><span class="line">    <span
+														class="keyword">if</span> (retries &gt; RETRIES_BEFORE_LOCK) {</span><br><span
+														class="line">      <span class="keyword">for</span> (<span
+														class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j)</span><br><span
+														class="line">        segmentAt(segments, j).unlock();</span><br><span
+														class="line">    }</span><br><span
+														class="line">  }</span><br><span class="line">  <span
+														class="keyword">return</span> overflow ? Integer.MAX_VALUE : size;</span><br><span
+														class="line">}</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<h2 id="不同之处"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E4%B8%8D%E5%90%8C%E4%B9%8B%E5%A4%84"
+										class="headerlink" title="不同之处"></a>不同之处</h2>
+								<p>ConcurrentHashMap与HashMap相比，有以下不同点</p>
+								<ul>
+									<li>ConcurrentHashMap线程安全，而HashMap非线程安全</li>
+									<li>HashMap允许Key和Value为null，而ConcurrentHashMap不允许</li>
+									<li>HashMap不允许通过Iterator遍历的同时通过HashMap修改，而ConcurrentHashMap允许该行为，并且该更新对后续的遍历可见</li>
+								</ul>
+								<h1 id="Java-8基于CAS的ConcurrentHashMap"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#Java-8%E5%9F%BA%E4%BA%8ECAS%E7%9A%84ConcurrentHashMap"
+										class="headerlink" title="Java 8基于CAS的ConcurrentHashMap"></a>Java
+									8基于CAS的ConcurrentHashMap</h1>
+								<p>注：本章的代码均基于JDK 1.8.0_111</p>
+								<h2 id="数据结构-1"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1"
+										class="headerlink" title="数据结构"></a>数据结构</h2>
+								<p>Java 7为实现并行访问，引入了Segment这一结构，实现了分段锁，理论上最大并发度与Segment个数相等。Java
+									8为进一步提高并发性，摒弃了分段锁的方案，而是直接使用一个大的数组。同时为了提高哈希碰撞下的寻址性能，Java
+									8在链表长度超过一定阈值（8）时将链表（寻址时间复杂度为O(N)）转换为红黑树（寻址时间复杂度为O(long(N))）。其数据结构如下图所示</p>
+								<div align="center"><br><a href="ConcurrentHashMap_files/concurrenthashmap_java8.png"
+														   class="fancybox fancybox.image" rel="group"><img width="50%"
+																											src="ConcurrentHashMap_files/concurrenthashmap_java8.png"
+																											alt="JAVA 8 ConcurrentHashMap"></a><br>
+								</div>
+
+								<h2 id="寻址方式-1"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F-1"
+										class="headerlink" title="寻址方式"></a>寻址方式</h2>
+								<p>Java
+									8的ConcurrentHashMap同样是通过Key的哈希值与数组长度取模确定该Key在数组中的索引。同样为了避免不太好的Key的hashCode设计，它通过如下方法计算得到Key的最终哈希值。不同的是，Java
+									8的ConcurrentHashMap作者认为引入红黑树后，即使哈希冲突比较严重，寻址效率也足够高，所以作者并未在哈希值的计算上做过多设计，只是将Key的hashCode值与其高16位作异或并保证最高位为0（从而保证最终结果为正整数）。<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span class="function"><span class="keyword">static</span> <span
+														class="keyword">final</span> <span
+														class="keyword">int</span> <span
+														class="title">spread</span><span class="params">(<span
+														class="keyword">int</span> h)</span> </span>{</span><br><span
+														class="line">  <span class="keyword">return</span> (h ^ (h &gt;&gt;&gt; <span
+														class="number">16</span>)) &amp; HASH_BITS;</span><br><span
+														class="line">}</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<h2 id="同步方式-1"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F-1"
+										class="headerlink" title="同步方式"></a>同步方式</h2>
+								<p>对于put操作，如果Key对应的数组元素为null，则通过<a
+										href="http://www.jasongj.com/java/thread_safe/#CAS%EF%BC%88compare-and-swap%EF%BC%89">CAS操作</a>将其设置为当前值。如果Key对应的数组元素（也即链表表头或者树的根元素）不为null，则对该元素使用synchronized关键字申请锁，然后进行操作。如果该put操作使得当前链表长度超过一定阈值，则将该链表转换为树，从而提高寻址效率。
+								</p>
+								<p>对于读操作，由于数组被volatile关键字修饰，因此不用担心数组的可见性问题。同时每个元素是一个Node实例（Java
+									7中每个元素是一个HashEntry），它的Key值和hash值都由final修饰，不可变更，无须关心它们被修改后的可见性问题。而其Value及对下一个元素的引用由volatile修饰，可见性也有保障。<br>
+								</p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br><span class="line">4</span><br><span
+														class="line">5</span><br><span class="line">6</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span class="keyword">static</span> <span
+														class="class"><span class="keyword">class</span> <span
+														class="title">Node</span>&lt;<span class="title">K</span>,<span
+														class="title">V</span>&gt; <span
+														class="keyword">implements</span> <span class="title">Map</span>.<span
+														class="title">Entry</span>&lt;<span class="title">K</span>,<span
+														class="title">V</span>&gt; </span>{</span><br><span
+														class="line">  <span class="keyword">final</span> <span
+														class="keyword">int</span> hash;</span><br><span class="line">  <span
+														class="keyword">final</span> K key;</span><br><span
+														class="line">  <span
+														class="keyword">volatile</span> V val;</span><br><span
+														class="line">  <span class="keyword">volatile</span> Node&lt;K,V&gt; next;</span><br><span
+														class="line">}</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<p>对于Key对应的数组元素的可见性，由Unsafe的getObjectVolatile方法保证。<br></p>
+								<figure class="highlight java">
+									<table>
+										<tbody>
+										<tr>
+											<td class="gutter">
+												<pre><span class="line">1</span><br><span class="line">2</span><br><span
+														class="line">3</span><br></pre>
+											</td>
+											<td class="code">
+												<pre><span class="line"><span class="keyword">static</span> <span
+														class="keyword">final</span> &lt;K,V&gt; <span class="function">Node&lt;K,V&gt; <span
+														class="title">tabAt</span><span class="params">(Node&lt;K,V&gt;[] tab, <span
+														class="keyword">int</span> i)</span> </span>{</span><br><span
+														class="line">  <span class="keyword">return</span> (Node&lt;K,V&gt;)U.getObjectVolatile(tab, ((<span
+														class="keyword">long</span>)i &lt;&lt; ASHIFT) + ABASE);</span><br><span
+														class="line">}</span><br></pre>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</figure>
+								<p></p>
+								<h2 id="size操作-1"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#size%E6%93%8D%E4%BD%9C-1"
+										class="headerlink" title="size操作"></a>size操作</h2>
+								<p>put方法和remove方法都会通过addCount方法维护Map的size。size方法通过sumCount获取由addCount方法维护的Map的size。</p>
+								<h1 id="Java进阶系列"><a
+										href="http://www.jasongj.com/java/concurrenthashmap/#Java%E8%BF%9B%E9%98%B6%E7%B3%BB%E5%88%97"
+										class="headerlink" title="Java进阶系列"></a>Java进阶系列</h1>
+								<ul>
+									<li><a href="http://www.jasongj.com/2016/01/17/Java1_%E6%B3%A8%E8%A7%A3Annotation/">Java进阶（一）Annotation（注解）</a>
+									</li>
+									<li><a href="http://www.jasongj.com/java/thread_safe">Java进阶（二）当我们说线程安全时，到底在说什么</a>
+									</li>
+									<li><a href="http://www.jasongj.com/java/multi_thread">Java进阶（三）多线程开发关键技术</a></li>
+									<li>
+										<a href="http://www.jasongj.com/java/thread_communication">Java进阶（四）线程间通信方式对比</a>
+									</li>
+									<li><a href="http://www.jasongj.com/java/nio_reactor/">Java进阶（五）NIO和Reactor模式进阶</a>
+									</li>
+									<li><a href="http://www.jasongj.com/java/concurrenthashmap/">Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术</a>
+									</li>
+								</ul>
+
+								<script>
+									window.disqusProxy = {
+										shortname: 'jasongj',
+										username: 'jasongj',
+										server: 'comments.jasongj.com',
+										port: 80,
+										adminAvatar: '/avatars/admin-avatar.jpg',
+										identifier: 'java/concurrenthashmap/',
+									};
+									window.disqus_config = function () {
+										this.page.url = window.location.href;
+										this.page.identifier = window.disqusProxy.identifier;
+									};
+								</script>
+
+							</div>
+
+							<div>
+
+
+								<div id="wechat_subscriber"
+									 style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+									<a href="ConcurrentHashMap_files/WeChat_QR.png" class="fancybox fancybox.image"
+									   rel="group"><img id="wechat_subscriber_qcode"
+														src="ConcurrentHashMap_files/WeChat_QR.png"
+														alt="郭俊 Jason wechat"
+														style="width: 200px; max-width: 100%;"></a>
+									<div>欢迎关注作者微信公众号【大数据架构】</div>
+								</div>
+
+
+							</div>
+
+							<div>
+
+
+								<div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+									<div>您的赞赏将支持作者继续原创分享</div>
+									<button id="rewardButton" disable="enable"
+											onclick="var qr = document.getElementById(&#39;QR&#39;); if (qr.style.display === &#39;none&#39;) {qr.style.display=&#39;block&#39;;} else {qr.style.display=&#39;none&#39;}"
+											style="cursor: pointer; border: 0; outline: 0; border-radius: 100%; padding: 0; margin: 0; letter-spacing: normal; text-transform: none; text-indent: 0px; text-shadow: none">
+										<span onmouseover="this.style.color=&#39;rgb(236,96,0)&#39;;this.style.background=&#39;rgb(204,204,204)&#39;"
+											  onmouseout="this.style.color=&#39;#fff&#39;;this.style.background=&#39;rgb(236,96,0)&#39;"
+											  style="display: inline-block; width: 70px; height: 70px; border-radius: 100%; line-height: 81px; color: #fff; font: 400 35px/75px &#39;microsofty&#39;; background: rgb(236,96,0)">赞</span>
+									</button>
+									<div id="QR" style="display: none;">
+
+										<div id="wechat" style="display: inline-block">
+											<a href="ConcurrentHashMap_files/wechat.png" class="fancybox fancybox.image"
+											   rel="group"><img id="wechat_qr" src="ConcurrentHashMap_files/wechat.png"
+																alt=" WeChat Pay"
+																style="width: 200px; max-width: 100%; display: inline-block"></a>
+											<p>微信赞赏</p>
+										</div>
+
+
+										<div id="alipay" style="display: inline-block">
+											<a href="ConcurrentHashMap_files/alipay.png" class="fancybox fancybox.image"
+											   rel="group"><img id="alipay_qr" src="ConcurrentHashMap_files/alipay.png"
+																alt=" Alipay"
+																style="width: 200px; max-width: 100%; display: inline-block"></a>
+											<p>支付宝赞赏</p>
+										</div>
+
+									</div>
+								</div>
+
+
+							</div>
+
+							<div>
+
+
+							</div>
+
+							<footer class="post-footer">
+
+								<div class="post-tags">
+
+									<a href="http://www.jasongj.com/tags/java/" rel="tag"># java</a>
+
+								</div>
+
+
+								<div class="post-nav">
+									<div class="post-nav-next post-nav-item">
+
+										<a href="http://www.jasongj.com/kafka/high_throughput/" rel="next"
+										   title="Kafka设计解析（六）- Kafka高性能架构之道">
+											<i class="fa fa-chevron-left"></i> Kafka设计解析（六）- Kafka高性能架构之道
+										</a>
+
+									</div>
+
+									<span class="post-nav-divider"></span>
+
+									<div class="post-nav-prev post-nav-item">
+
+										<a href="http://www.jasongj.com/kafka/kafka_stream/" rel="prev"
+										   title="Kafka设计解析（七）- Kafka Stream">
+											Kafka设计解析（七）- Kafka Stream <i class="fa fa-chevron-right"></i>
+										</a>
+
+									</div>
+								</div>
+
+
+							</footer>
+						</article>
+
+
+						<div class="post-spread">
+
+						</div>
+					</div>
+
+
+				</div>
+
+
+				<div class="comments" id="comments">
+
+
+					<link rel="stylesheet" href="ConcurrentHashMap_files/iDisqus.min.css">
+					<script type="text/javascript" src="ConcurrentHashMap_files/iDisqus.min.js.下载"></script>
+
+					<input type="checkbox" hidden="false" id="comment-toggle" disabled="">
+					<div id="comment">
+						<div class="comment loading" id="idisqus" style="display: block;">
+							<div class="comment-reaction">
+								<div class="comment-reaction-header">
+									<div class="comment-reaction-prompt"></div>
+									<div class="comment-reaction-total"></div>
+								</div>
+								<div class="comment-reaction-list"></div>
+							</div>
+							<div class="init-container" data-tips="正在初始化……">
+								<svg class="init-bg" width="72" height="72" viewBox="0 0 720 720" version="1.1"
+									 xmlns="http://www.w3.org/2000/svg">
+									<path class="ring" fill="none" stroke="#9d9ea1"
+										  d="M 0 -260 A 260 260 0 1 1 -80 -260" transform="translate(400,400)"
+										  stroke-width="50"></path>
+									<polygon transform="translate(305,20)"
+											 points="50,0 0,100 18,145 50,82 92,145 100,100"
+											 style="fill:#9d9ea1"></polygon>
+								</svg>
+							</div>
+							<div class="comment-header">
+								<div class="comment-header-primary">
+									<span class="comment-header-item" id="comment-count">22 条评论</span>
+									<a class="comment-header-item" id="comment-link" target="_blank"
+									   href="https://disqus.com/home/discussion/jasongj/javaconcurrenthashmapjava7java8/?l=zh">在线讨论</a>
+								</div>
+								<div class="comment-header-menu">
+									<input class="comment-header-checkbox" type="checkbox" id="comment-user">
+									<label class="comment-header-item comment-login" title="使用 Disqus 帐号授权登录"
+										   for="comment-user">登录</label>
+								</div>
+							</div>
+							<div class="comment-navbar">
+								<div class="comment-navbar-item">
+									<a class="comment-recommend" href="javascript:;">
+										<svg t="1537508059126" class="icon" style="" viewBox="0 0 1024 1024"
+											 version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3234"
+											 width="24" height="24">
+											<path d="M489.993 887.107 177.906 586.021c-4.002-3.501-114.033-104.031-114.033-224.063 0-146.54 89.526-234.065 239.069-234.065 87.523 0 169.546 69.019 209.058 108.03 39.512-39.011 121.535-108.03 209.059-108.03 149.542 0 239.068 87.525 239.068 234.065 0 120.033-110.031 220.563-114.533 225.065L534.007 887.107c-6 6-14.003 9-22.007 9C503.997 896.107 495.993 893.107 489.993 887.107z"
+												  p-id="3235"></path>
+										</svg>
+										<span class="comment-recommend-text">推荐</span><span
+											class="comment-recommend-count"></span></a>
+								</div>
+								<div class="comment-navbar-item comment-order">
+									<input class="comment-order-radio" id="order-popular" type="radio"
+										   name="comment-order" value="popular">
+									<label class="comment-order-label" for="order-popular" title="按评分高低排序">最佳</label>
+									<input class="comment-order-radio" id="order-desc" type="radio" name="comment-order"
+										   value="desc">
+									<label class="comment-order-label" for="order-desc" title="按从新到旧排序">最新</label>
+									<input class="comment-order-radio" id="order-asc" type="radio" name="comment-order"
+										   value="asc">
+									<label class="comment-order-label" for="order-asc" title="按从旧到新排序">最早</label>
+								</div>
+							</div>
+							<div class="comment-box">
+								<div class="comment-avatar avatar"><img class="comment-avatar-image"
+																		src="ConcurrentHashMap_files/avatar92.jpg"
+																		data-avatar="https://c.disquscdn.com/uploads/forums/521/2650/avatar92.jpg?1500945185">
+								</div>
+								<div class="comment-form">
+									<div class="comment-form-wrapper">
+										<textarea class="comment-form-textarea" placeholder="加入讨论……"></textarea>
+										<div class="comment-form-alert"></div>
+										<div class="comment-image">
+											<ul class="comment-image-list"></ul>
+											<div class="comment-image-progress">
+												<div class="comment-image-loaded"></div>
+											</div>
+										</div>
+
+										<div class="comment-actions">
+
+											<div class="comment-actions-group">
+												<input id="emoji-input" class="comment-actions-input" type="checkbox">
+												<label class="comment-actions-label emojione" for="emoji-input">
+													<svg class="icon" fill="#c2c6cc" viewBox="0 0 1024 1024"
+														 version="1.1" xmlns="http://www.w3.org/2000/svg"
+														 width="200" height="200">
+														<g>
+															<title>选择表情</title>
+															<path d="M512 1024c-282.713043 0-512-229.286957-512-512s229.286957-512 512-512c282.713043 0 512 229.286957 512 512S792.486957 1024 512 1024zM512 44.521739c-258.226087 0-467.478261 209.252174-467.478261 467.478261 0 258.226087 209.252174 467.478261 467.478261 467.478261s467.478261-209.252174 467.478261-467.478261C979.478261 253.773913 768 44.521739 512 44.521739z"></path>
+															<path d="M801.391304 554.295652c0 160.278261-129.113043 289.391304-289.391304 289.391304s-289.391304-129.113043-289.391304-289.391304L801.391304 554.295652z"></path>
+															<path d="M674.504348 349.495652m-57.878261 0a2.6 2.6 0 1 0 115.756522 0 2.6 2.6 0 1 0-115.756522 0Z"></path>
+															<path d="M347.269565 349.495652m-57.878261 0a2.6 2.6 0 1 0 115.756522 0 2.6 2.6 0 1 0-115.756522 0Z"></path>
+														</g>
+													</svg>
+													<ul class="emojione-list">
+														<li class="emojione-item" title="笑脸" data-code=":smile:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f604.png"></li>
+														<li class="emojione-item" title="生病" data-code=":mask:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f637.png"></li>
+														<li class="emojione-item" title="破涕为笑" data-code=":joy:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f602.png"></li>
+														<li class="emojione-item" title="吐舌"
+															data-code=":stuck_out_tongue_closed_eyes:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f61d.png"></li>
+														<li class="emojione-item" title="脸红" data-code=":flushed:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f633.png"></li>
+														<li class="emojione-item" title="恐惧" data-code=":scream:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f631.png"></li>
+														<li class="emojione-item" title="失望" data-code=":pensive:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f614.png"></li>
+														<li class="emojione-item" title="无语" data-code=":unamused:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f612.png"></li>
+														<li class="emojione-item" title="露齿笑" data-code=":grin:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f601.png"></li>
+														<li class="emojione-item" title="色" data-code=":heart_eyes:">
+															<img class="emojione-item-image"
+																 src="ConcurrentHashMap_files/1f60d.png"></li>
+														<li class="emojione-item" title="汗" data-code=":sweat:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f613.png"></li>
+														<li class="emojione-item" title="得意" data-code=":smirk:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f60f.png"></li>
+														<li class="emojione-item" title="满意" data-code=":relieved:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f60c.png"></li>
+														<li class="emojione-item" title="翻白眼"
+															data-code=":rolling_eyes:"><img class="emojione-item-image"
+																							src="ConcurrentHashMap_files/1f644.png">
+														</li>
+														<li class="emojione-item" title="OK" data-code=":ok_hand:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/1f44c.png"></li>
+														<li class="emojione-item" title="胜利" data-code=":v:"><img
+																class="emojione-item-image"
+																src="ConcurrentHashMap_files/270c.png"></li>
+													</ul>
+												</label>
+												<input id="upload-input"
+													   class="comment-actions-input comment-image-input" type="file"
+													   accept="image/*" name="file">
+												<label class="comment-actions-label" for="upload-input">
+													<svg class="icon" fill="#c2c6cc" viewBox="0 0 1024 1024"
+														 version="1.1" xmlns="http://www.w3.org/2000/svg"
+														 width="200" height="200">
+														<g>
+															<title>上传图片</title>
+															<path d="M15.515152 15.515152 15.515152 15.515152 15.515152 15.515152Z"></path>
+															<path d="M15.515152 139.636364l0 806.787879 992.969697 0 0-806.787879-992.969697 0zM946.424242 884.363636l-868.848485 0 0-682.666667 868.848485 0 0 682.666667zM698.181818 356.848485c0-51.417212 41.673697-93.090909 93.090909-93.090909s93.090909 41.673697 93.090909 93.090909c0 51.417212-41.673697 93.090909-93.090909 93.090909s-93.090909-41.673697-93.090909-93.090909zM884.363636 822.30303l-744.727273 0 186.181818-496.484848 248.242424 310.30303 124.121212-93.090909z"></path>
+														</g>
+													</svg>
+												</label>
+											</div>
+
+											<div class="comment-actions-form">
+												<button class="comment-form-submit">
+													<svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+														 xmlns="http://www.w3.org/2000/svg"
+														 width="200" height="200">
+														<path d="M565.747623 792.837176l260.819261 112.921839 126.910435-845.424882L66.087673 581.973678l232.843092 109.933785 562.612725-511.653099-451.697589 563.616588-5.996574 239.832274L565.747623 792.837176z"
+															  fill="#ffffff"></path>
+													</svg>
+												</button>
+											</div>
+										</div>
+
+									</div>
+									<div class="comment-form-user">
+										<form class="comment-form-guest"><input
+												class="comment-form-input comment-form-name" type="text" name="name"
+												placeholder="名字（必填）" autocomplete="name"><input
+												class="comment-form-input comment-form-email" type="email" name="email"
+												placeholder="邮箱（必填）" autocomplete="email"><input
+												class="comment-form-input comment-form-url" type="url" name="url"
+												placeholder="网址（可选）" autocomplete="url"></form>
+									</div>
+								</div>
+							</div>
+							<ul id="comments" class="comment-list" data-tips="评论加载中……"></ul>
+							<a href="javascript:;" class="comment-loadmore hide">加载更多</a>
+							<div class="comment-related"></div>
+						</div>
+						<div class="comment" id="disqus_thread" style="display: none;"></div>
+					</div>
+					<script>
+						var disq = new iDisqus('comment', {
+							forum: 'jasongj',
+							api: 'http://comments.jasongj.com/disqus',
+							site: 'http://www.jasongj.com',
+							url: decodeURI('/java/concurrenthashmap/'),
+							mode: 3,
+							identifier: decodeURI('/java/concurrenthashmap/'),
+							title: 'Java进阶（六）从ConcurrentHashMap的演进看Java多线程核心技术',
+							slug: '/java/concurrenthashmap/',
+							trust: 'www.jasongj.com',
+							popular: document.getElementById('popular-posts'),
+							timeout: 3000,
+							init: true,
+							emojiPreview: true
+						});
+						<!-- disq.count(); -->
+					</script>
+
+				</div>
+
+
+			</div>
+
+
+			<div class="sidebar-toggle">
+				<div class="sidebar-toggle-line-wrap">
+					<span class="sidebar-toggle-line sidebar-toggle-line-first"
+						  style="top: 5px; transform: rotateZ(-45deg); width: 100%;"></span>
+					<span class="sidebar-toggle-line sidebar-toggle-line-middle" style="opacity: 0;"></span>
+					<span class="sidebar-toggle-line sidebar-toggle-line-last"
+						  style="top: -5px; transform: rotateZ(45deg); width: 100%;"></span>
+				</div>
+			</div>
+
+			<aside id="sidebar" class="sidebar sidebar-active" style="display: block; width: 320px;">
+				<div class="sidebar-inner">
+
+
+					<ul class="sidebar-nav motion-element"
+						style="opacity: 1; display: block; transform: translateX(0px);">
+						<li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+							文章目录
+						</li>
+						<li class="sidebar-nav-overview" data-target="site-overview">
+							站点概览
+						</li>
+					</ul>
+
+
+					<section class="site-overview sidebar-panel">
+						<div class="site-author motion-element" itemprop="author" itemscope=""
+							 itemtype="http://schema.org/Person"
+							 style="opacity: 1; display: block; transform: translateX(0px);">
+							<img class="site-author-image" itemprop="image"
+								 src="ConcurrentHashMap_files/WeChat_QR(1).png" alt="郭俊 Jason" height="160px"
+								 width="160px">
+							<p class="site-author-name" itemprop="name">郭俊 Jason</p>
+
+							<p class="site-description motion-element" itemprop="description"
+							   style="opacity: 1; display: block; transform: translateX(0px);"></p>
+
+						</div>
+						<nav class="site-state motion-element"
+							 style="opacity: 1; display: block; transform: translateX(0px);">
+
+
+							<div class="site-state-item site-state-posts">
+								<a href="http://www.jasongj.com/">
+									<span class="site-state-item-count">49</span>
+									<span class="site-state-item-name">日志</span>
+								</a>
+							</div>
+
+
+							<div class="site-state-item site-state-categories">
+								<a href="http://www.jasongj.com/categories/index.html">
+									<span class="site-state-item-count">30</span>
+									<span class="site-state-item-name">分类</span>
+								</a>
+							</div>
+
+
+							<div class="site-state-item site-state-tags">
+								<a href="http://www.jasongj.com/tags/index.html">
+									<span class="site-state-item-count">23</span>
+									<span class="site-state-item-name">标签</span>
+								</a>
+							</div>
+
+
+						</nav>
+
+						<div class="feed-link motion-element"
+							 style="opacity: 1; display: block; transform: translateX(0px);">
+
+							<a href="http://www.jasongj.com/atom.xml" rel="alternate" target="_blank">
+								<i class="fa fa-rss"></i>
+								RSS订阅
+							</a>
+
+							<a href="http://eepurl.com/bLDcFD" rel="external nofollow" target="_blank">
+								<i class="fa fa-rss"></i>
+								邮件订阅
+							</a>
+
+						</div>
+
+
+						<div class="links-of-author motion-element"
+							 style="opacity: 1; display: block; transform: translateX(0px);">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/jasongj" target="_blank" title="Linkedin" rel="external nofollow">
+                  
+                    <i class="fa fa-linkedin-square"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+
+							<span class="links-of-author-item">
+                <a href="mailto:jason.guo.vip@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                  
+                    <i class="fa fa-envelope-o"></i>
+                  
+                  E-Mail
+                </a>
+              </span>
+
+
+						</div>
+
+
+						<div class="links-of-blogroll motion-element links-of-blogroll-inline"
+							 style="opacity: 1; display: block; transform: translateX(0px);">
+							<div class="links-of-blogroll-title">
+								<i class="fa  fa-fw fa-globe"></i>
+								Links
+							</div>
+							<ul class="links-of-blogroll-list">
+
+								<li class="links-of-blogroll-item">
+									<a href="https://www.infoq.cn/profile/1278686" title="发表在InfoQ上的文章" target="_blank">发表在InfoQ上的文章</a>
+								</li>
+
+							</ul>
+						</div>
+
+
+					</section>
+
+
+					<!--noindex-->
+					<section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"
+							 style="opacity: 1; display: block; transform: translateX(0px);">
+						<div class="post-toc" style="max-height: 493px; width: calc(100% + 11px);">
+
+
+							<div class="post-toc-content">
+								<ol class="nav">
+									<li class="nav-item nav-level-1"><a class="nav-link"
+																		href="http://www.jasongj.com/java/concurrenthashmap/#%E7%BA%BF%E7%A8%8B%E4%B8%8D%E5%AE%89%E5%85%A8%E7%9A%84HashMap"><span
+											class="nav-number">1.</span> <span class="nav-text">线程不安全的HashMap</span></a>
+										<ol class="nav-child">
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span
+													class="nav-number">1.1.</span> <span
+													class="nav-text">HashMap工作原理</span></a>
+												<ol class="nav-child">
+													<li class="nav-item nav-level-3"><a class="nav-link"
+																						href="http://www.jasongj.com/java/concurrenthashmap/#HashMap%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span
+															class="nav-number">1.1.1.</span> <span class="nav-text">HashMap数据结构</span></a>
+													</li>
+													<li class="nav-item nav-level-3"><a class="nav-link"
+																						href="http://www.jasongj.com/java/concurrenthashmap/#HashMap%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span
+															class="nav-number">1.1.2.</span> <span class="nav-text">HashMap寻址方式</span></a>
+													</li>
+												</ol>
+											</li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#resize%E6%AD%BB%E5%BE%AA%E7%8E%AF"><span
+													class="nav-number">1.2.</span> <span
+													class="nav-text">resize死循环</span></a>
+												<ol class="nav-child">
+													<li class="nav-item nav-level-3"><a class="nav-link"
+																						href="http://www.jasongj.com/java/concurrenthashmap/#transfer%E6%96%B9%E6%B3%95"><span
+															class="nav-number">1.2.1.</span> <span class="nav-text">transfer方法</span></a>
+													</li>
+													<li class="nav-item nav-level-3"><a class="nav-link"
+																						href="http://www.jasongj.com/java/concurrenthashmap/#%E5%8D%95%E7%BA%BF%E7%A8%8Brehash"><span
+															class="nav-number">1.2.2.</span> <span class="nav-text">单线程rehash</span></a>
+													</li>
+													<li class="nav-item nav-level-3"><a class="nav-link"
+																						href="http://www.jasongj.com/java/concurrenthashmap/#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91%E4%B8%8B%E7%9A%84rehash"><span
+															class="nav-number">1.2.3.</span> <span class="nav-text">多线程并发下的rehash</span></a>
+													</li>
+												</ol>
+											</li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#Fast-fail"><span
+													class="nav-number">1.3.</span> <span
+													class="nav-text">Fast-fail</span></a>
+												<ol class="nav-child">
+													<li class="nav-item nav-level-3"><a class="nav-link"
+																						href="http://www.jasongj.com/java/concurrenthashmap/#%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0"><span
+															class="nav-number">1.3.1.</span> <span
+															class="nav-text">产生原因</span></a></li>
+													<li class="nav-item nav-level-3"><a class="nav-link"
+																						href="http://www.jasongj.com/java/concurrenthashmap/#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span
+															class="nav-number">1.3.2.</span> <span class="nav-text">线程安全解决方案</span></a>
+													</li>
+												</ol>
+											</li>
+										</ol>
+									</li>
+									<li class="nav-item nav-level-1"><a class="nav-link"
+																		href="http://www.jasongj.com/java/concurrenthashmap/#Java-7%E5%9F%BA%E4%BA%8E%E5%88%86%E6%AE%B5%E9%94%81%E7%9A%84ConcurrentHashMap"><span
+											class="nav-number">2.</span> <span class="nav-text">Java 7基于分段锁的ConcurrentHashMap</span></a>
+										<ol class="nav-child">
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span
+													class="nav-number">2.1.</span> <span
+													class="nav-text">数据结构</span></a></li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span
+													class="nav-number">2.2.</span> <span
+													class="nav-text">寻址方式</span></a></li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F"><span
+													class="nav-number">2.3.</span> <span
+													class="nav-text">同步方式</span></a></li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#size%E6%93%8D%E4%BD%9C"><span
+													class="nav-number">2.4.</span> <span class="nav-text">size操作</span></a>
+											</li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#%E4%B8%8D%E5%90%8C%E4%B9%8B%E5%A4%84"><span
+													class="nav-number">2.5.</span> <span
+													class="nav-text">不同之处</span></a></li>
+										</ol>
+									</li>
+									<li class="nav-item nav-level-1"><a class="nav-link"
+																		href="http://www.jasongj.com/java/concurrenthashmap/#Java-8%E5%9F%BA%E4%BA%8ECAS%E7%9A%84ConcurrentHashMap"><span
+											class="nav-number">3.</span> <span class="nav-text">Java 8基于CAS的ConcurrentHashMap</span></a>
+										<ol class="nav-child">
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1"><span
+													class="nav-number">3.1.</span> <span
+													class="nav-text">数据结构</span></a></li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F-1"><span
+													class="nav-number">3.2.</span> <span
+													class="nav-text">寻址方式</span></a></li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F-1"><span
+													class="nav-number">3.3.</span> <span
+													class="nav-text">同步方式</span></a></li>
+											<li class="nav-item nav-level-2"><a class="nav-link"
+																				href="http://www.jasongj.com/java/concurrenthashmap/#size%E6%93%8D%E4%BD%9C-1"><span
+													class="nav-number">3.4.</span> <span class="nav-text">size操作</span></a>
+											</li>
+										</ol>
+									</li>
+									<li class="nav-item nav-level-1 active active-current"><a class="nav-link"
+																							  href="http://www.jasongj.com/java/concurrenthashmap/#Java%E8%BF%9B%E9%98%B6%E7%B3%BB%E5%88%97"><span
+											class="nav-number">4.</span> <span class="nav-text">Java进阶系列</span></a></li>
+								</ol>
+							</div>
+
+
+						</div>
+					</section>
+					<!--/noindex-->
+
+
+				</div>
+			</aside>
+
+
+		</div>
+	</main>
+
+	<footer id="footer" class="footer">
+		<div class="footer-inner">
+			<div class="copyright">
+
+				© 2015 -
+				<span itemprop="copyrightYear">2019</span>
+				<span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+				<span class="author" itemprop="copyrightHolder">郭俊 Jason</span>
+
+
+				<span class="copyrightHolder">
+      &nbsp; | &nbsp; 沪ICP备16005463号-1 &nbsp;
+    </span>
+
+
+				<span class="post-count">
+      &nbsp; | &nbsp; 总字数 &nbsp; 293.5k
+    </span>
+
+
+				<span class="post-comments-count">
+      &nbsp; |  &nbsp;
+      <a id="translateLink" href="javascript:translatePage();">繁體中文</a>
+    </span>
+
+			</div>
+
+
+			<!--
+			<script type="text/javascript" src="http://www.arao.me/js/tw_cn.js"></script>
+			-->
+			<script type="text/javascript" src="ConcurrentHashMap_files/tw_cn.js.下载"></script>
+			<script type="text/javascript">
+				var defaultEncoding = 2; //网站编写字体是否繁体，1-繁体中文，2-简体中文
+				var translateDelay = 0; //延迟时间,若不在前, 要设定延迟翻译时间, 如100表示100ms,默认为0
+				var cookieDomain = "http://www.jasongj.com/"; //Cookie地址, 一定要设定, 通常为你的网址
+				var msgToTraditionalChinese = "繁體中文"; //此处可以更改为你想要显示的文字
+				var msgToSimplifiedChinese = "简体中文"; //同上，但两处均不建议更改
+				var translateButtonId = "translateLink"; //默认互换id
+				translateInitilization();
+			</script>
+
+
+		</div>
+	</footer>
+
+
+	<div class="back-to-top back-to-top-on">
+		<i class="fa fa-arrow-up"></i>
+
+	</div>
+
+
+</div>
+
+
+<script type="text/javascript">
+	if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+		window.Promise = null;
+	}
+</script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/jquery.min.js.下载"></script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/jquery.lazyload.min.js.下载"></script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/velocity.min.js.下载"></script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/velocity.ui.min.js.下载"></script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/jquery.fancybox.pack.js.下载"></script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/fastclick.js.下载"></script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/utils.js.下载"></script>
+
+<script type="text/javascript" src="ConcurrentHashMap_files/motion.js.下载"></script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/scrollspy.js.下载"></script>
+<script type="text/javascript" src="ConcurrentHashMap_files/post-details.js.下载"></script>
+
+
+<script type="text/javascript" src="ConcurrentHashMap_files/bootstrap.js.下载"></script>
+
+
+<!--
+  <script id="dsq-count-scr" src="https://jasongj.disqus.com/count.js" async></script>
+-->
+
+
+<!--
+<script type="text/javascript">
+  var disqus_config = function () {
+	this.page.url = 'http://www.jasongj.com/java/concurrenthashmap/';
+	this.page.identifier = 'java/concurrenthashmap/';
+	this.page.title = 'java/concurrenthashmap/';
+  };
+  var d = document, s = d.createElement('script');
+  s.src = 'https://jasongj.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', '' + +new Date());
+  (d.head || d.body).appendChild(s);
+</script>
+-->
+
+
+<!--
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+-->
+<script src="ConcurrentHashMap_files/av-core-mini.js.下载"></script>
+<script>AV.initialize("NM4EaDS1gLL02qsIqliTOYBL-gzGzoHsz", "kmS5yUFSvuaXtVA4MyRkINw4");</script>
+<script>
+	function showTime(Counter) {
+		var query = new AV.Query(Counter);
+		var entries = [];
+		var $visitors = $(".leancloud_visitors");
+
+		$visitors.each(function () {
+			entries.push($(this).attr("id").trim());
+		});
+
+		query.containedIn('url', entries);
+		query.find()
+			.done(function (results) {
+				var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+				if (results.length === 0) {
+					$visitors.find(COUNT_CONTAINER_REF).text(0);
+					return;
+				}
+
+				for (var i = 0; i < results.length; i++) {
+					var item = results[i];
+					var url = item.get('url');
+					var time = item.get('time');
+					var element = document.getElementById(url);
+
+					$(element).find(COUNT_CONTAINER_REF).text(time);
+				}
+				for (var i = 0; i < entries.length; i++) {
+					var url = entries[i];
+					var element = document.getElementById(url);
+					var countSpan = $(element).find(COUNT_CONTAINER_REF);
+					if (countSpan.text() == '') {
+						countSpan.text(0);
+					}
+				}
+			})
+			.fail(function (object, error) {
+				console.log("Error: " + error.code + " " + error.message);
+			});
+	}
+
+	function addCount(Counter) {
+		var $visitors = $(".leancloud_visitors");
+		var url = $visitors.attr('id').trim();
+		var title = $visitors.attr('data-flag-title').trim();
+		var query = new AV.Query(Counter);
+
+		query.equalTo("url", url);
+		query.find({
+			success: function (results) {
+				if (results.length > 0) {
+					var counter = results[0];
+					counter.fetchWhenSave(true);
+					counter.increment("time");
+					counter.save(null, {
+						success: function (counter) {
+							var $element = $(document.getElementById(url));
+							$element.find('.leancloud-visitors-count').text(counter.get('time'));
+						},
+						error: function (counter, error) {
+							console.log('Failed to save Visitor num, with error message: ' + error.message);
+						}
+					});
+				} else {
+					var newcounter = new Counter();
+					/* Set ACL */
+					var acl = new AV.ACL();
+					acl.setPublicReadAccess(true);
+					acl.setPublicWriteAccess(true);
+					newcounter.setACL(acl);
+					/* End Set ACL */
+					newcounter.set("title", title);
+					newcounter.set("url", url);
+					newcounter.set("time", 1);
+					newcounter.save(null, {
+						success: function (newcounter) {
+							var $element = $(document.getElementById(url));
+							$element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+						},
+						error: function (newcounter, error) {
+							console.log('Failed to create');
+						}
+					});
+				}
+			},
+			error: function (error) {
+				console.log('Error:' + error.code + " " + error.message);
+			}
+		});
+	}
+
+	$(function () {
+		var Counter = AV.Object.extend("Counter");
+		if ($('.leancloud_visitors').length == 1) {
+			addCount(Counter);
+		} else if ($('.post-title-link').length > 1) {
+			showTime(Counter);
+		}
+	});
+</script>
+
+
+<script>
+	(function () {
+		var bp = document.createElement('script');
+		var curProtocol = window.location.protocol.split(':')[0];
+		if (curProtocol === 'https') {
+			bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+		}
+		else {
+			bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		}
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(bp, s);
+	})();
+</script>
+
+
+<script type="text/javascript">(function () {
+	document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));
+	var bdcs = document.createElement('script');
+	bdcs.type = 'text/javascript';
+	bdcs.async = true;
+	bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=11273528160680594791' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date() / 3600000);
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(bdcs, s);
+})();</script>
+<div id="bdcs">
+	<div class="bdcs-container">
+		<meta http-equiv="x-ua-compatible" content="IE=9">
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('.sidebar-toggle').trigger('click');
+
+		var countURL = "http://comments.jasongj.com/disqus/count.php?links=/java/concurrenthashmap/"
+
+		$.get(countURL, function (data) {
+			var getPath = function (url) {
+				var path = document.createElement("a");
+				path.href = url;
+				return path.pathname;
+			}
+			data.response.forEach((item) = > {
+				path = decodeURI(getPath(item.link));
+			$("span[identifier='" + path + "']").text(item.posts);
+		})
+			;
+		});
+	});</script>
+<!--
+  
+ -->
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config;executed=true">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+
+
+</script>
+
+<script type="text/x-mathjax-config;executed=true">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+
+
+</script>
+
+<script type="text/x-mathjax-config;executed=true">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+
+
+</script>
+
+<script src="ConcurrentHashMap_files/MathJax.js.下载" id="">
+</script>
+
+
+<div class="bdcs-search-custom-sug" id="bdcs-search-custom-sug" style="top: 96.0003px; left: 663.333px; width: 160px;">
+	<ul class="bdcs-search-custom-sug-list" id="bdcs-search-custom-sug-list"></ul>
+</div>
+<div id="hm_t_undefined" class="hm-t-container">
+	<div class="hm-t-go-top"
+		 style="display: block; background-position: -42px center; background-color: rgb(102, 102, 102);"></div>
+</div>
+</body>
+</html>

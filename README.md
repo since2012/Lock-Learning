@@ -23,23 +23,28 @@ https://github.com/aalansehaiyang/technology-talk/blob/master/system-architectur
 * [基于 zookeeper实现的分布式锁](https://github.com/aalansehaiyang/technology-talk/blob/master/system-architecture/readLock-zk.md)
 
 
+
 ####  可重入锁
 
-可重入锁，也叫做递归锁，是指在同一个线程在调外层方法获取锁的时候，再进入内层方法会自动获取锁。ReentrantLock 和synchronized 都是 可重入锁。可重入锁的一个好处是可一定程度避免死锁。
+可重入锁，也叫做递归锁，是指在同一个线程在调外层方法获取锁的时候，再进入内层方法会自动获取锁。
+ReentrantLock 和synchronized 都是 可重入锁。可重入锁的一个好处是可一定程度避免死锁。
 
 http://ifeve.com/java_lock_see4/
-
 代码示例：$Link {com.lock.reentrant.ReentrantTest}
+
+
 
 ####  自旋锁
 
 自旋锁是采用让当前线程不停地在循环体内执行，当循环的条件被其他线程改变时才能进入临界区。
 
-自旋锁只是将当前线程不停地执行循环体，不进行线程状态的改变，所以响应速度更快。但当线程数不断增加时，性能下降明显，因为每个线程都需要执行，会占用CPU时间片。如果线程竞争不激烈，并且保持锁的时间段。适合使用自旋锁。
+自旋锁只是将当前线程不停地执行循环体，不进行线程状态的改变，所以响应速度更快。但当线程数不断增加时，性能下降明显，
+因为每个线程都需要执行，会占用CPU时间片。如果线程竞争不激烈，并且保持锁的时间段。适合使用自旋锁。
 
 http://ifeve.com/java_lock_see1/
-
 代码示例：$Link {com.lock.spin.SpinLockTest}
+
+
 
 ####  独享锁
 
@@ -77,6 +82,8 @@ JAVA中，能够进入\退出、阻塞状态或包含阻塞锁的方法有 ，sy
 
 http://ifeve.com/java_lock_see3/
 
+
+
 ####  公平锁
 
 公平锁是指多个线程按照申请锁的顺序来获取锁
@@ -88,6 +95,8 @@ http://ifeve.com/java_lock_see3/
 可能造成优先级反转或者饥饿现象。对于Java ReentrantLock而言，通过构造函数 ReentrantLock(boolean fair) 指定该锁是否是公平锁，默认是非公平锁。
 
 非公平锁的优点在于吞吐量比公平锁大。对于Synchronized而言，也是一种非公平锁。
+
+
 
 ####  分段锁
 
