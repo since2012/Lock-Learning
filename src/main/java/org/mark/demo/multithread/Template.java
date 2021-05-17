@@ -2,10 +2,7 @@ package org.mark.demo.multithread;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -45,39 +42,38 @@ public abstract class Template {
 	abstract long getTotal();
 
 	public void testTime() {
-		ExecutorService se = Executors.newCachedThreadPool();
-		long start = System.nanoTime();
+		ExecutorService se = new ThreadPoolExecutor(20, 50,
+				60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+		long start = System.currentTimeMillis();
 		//同时开启2*ThreadNum个数的读写线程
 		for (int i = 0; i < threadNum; i++) {
 			se.execute(() -> {
-						for (int j = 0; j < round; j++) {
-							sum();
-						}
+				for (int j = 0; j < round; j++) {
+					sum();
+				}
 
-						try {
-							//每个线程执行完同步方法后就等待
-							barrier.await();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						} catch (BrokenBarrierException e) {
-							e.printStackTrace();
-						}
+				try {
+					//每个线程执行完同步方法后就等待
+					barrier.await();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (BrokenBarrierException e) {
+					e.printStackTrace();
+				}
 
-					}
-			);
+			});
 			se.execute(() -> {
-						getTotal();
-						try {
-							//每个线程执行完同步方法后就等待
-							barrier.await();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						} catch (BrokenBarrierException e) {
-							e.printStackTrace();
-						}
+				getTotal();
+				try {
+					//每个线程执行完同步方法后就等待
+					barrier.await();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (BrokenBarrierException e) {
+					e.printStackTrace();
+				}
 
-					}
-			);
+			});
 		}
 
 		try {
@@ -88,11 +84,10 @@ public abstract class Template {
 		} catch (BrokenBarrierException e) {
 			e.printStackTrace();
 		}
+
 		//所有线程执行完成之后，才会跑到这一步
-		long duration = System.nanoTime() - start;
-//		log.debug("round total:{}； thread total:{},", round, threadNum);
-//		log.debug("耗时：{},统计值：{}", duration, total);
-		log.debug("耗时：{},统计值：{}", duration, totalAtmoic.get());
+		long duration = System.currentTimeMillis() - start;
+		log.debug("耗时：{},统计值：{}", duration, getTotal());
 
 	}
 }

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @FileName Atomicity
- * @Description TODO
+ * @Description 原子性
  * @Author markt
  * @Date 2019-05-21
  * @Version 1.0

@@ -57,7 +57,7 @@ public class LinkedBlockingQueueTest {
 				Apple apple = null;
 				try {
 					apple = queue.take();
-					log.debug("消费" + apple.getColour() + "的苹果");
+					log.debug("消费" + apple.getColor() + "的苹果");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

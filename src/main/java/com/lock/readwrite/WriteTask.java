@@ -35,19 +35,17 @@ public class WriteTask implements Runnable {
 		}
 
 		log.debug(" 尝试请求write锁,,,,,,,");
+
 		writeLock.lock();
-
-		log.debug(" 已拿到write锁，开始处理业务");
-
-		// 模拟业务处理
 		try {
+			log.debug(" 已拿到write锁，开始处理业务");
 			Thread.sleep(new Random().nextInt(500));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} finally {
+			log.debug(" 释放write锁！！！！！！！！！！！！");
+			writeLock.unlock();
 		}
-
-		log.debug(" 释放write锁！！！！！！！！！！！！");
-		writeLock.unlock();
 
 	}
 

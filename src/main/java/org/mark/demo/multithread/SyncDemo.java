@@ -20,12 +20,9 @@ public class SyncDemo implements Runnable {
 
 	private CountDownLatch latch;
 
-	private CountDownLatch end;
-
-	SyncDemo(HashMap<String, Integer> x, CountDownLatch latch, CountDownLatch end) {
+	SyncDemo(HashMap<String, Integer> x, CountDownLatch latch) {
 		this.x = x;
 		this.latch = latch;
-		this.end = end;
 	}
 
 	public static void main(String[] args) {
@@ -34,7 +31,7 @@ public class SyncDemo implements Runnable {
 		HashMap<String, Integer> x = new HashMap<String, Integer>();
 		x.put("1", 0);
 		long start = System.currentTimeMillis();
-		SyncDemo test = new SyncDemo(x, latch, end);
+		SyncDemo test = new SyncDemo(x, latch);
 		for (int i = 0; i < 1000; i++) {
 			Thread t = new Thread(test);
 			t.start();
@@ -60,7 +57,6 @@ public class SyncDemo implements Runnable {
 			add();
 		}
 
-		end.countDown();
 	}
 
 	synchronized void add() {

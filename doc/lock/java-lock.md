@@ -20,8 +20,6 @@
 
 可重入锁最大的特点是避免死锁。
 
-SyncDemos,LockDemos
-
 2.信号量（Semaphore）
 
 * 公平和非公平

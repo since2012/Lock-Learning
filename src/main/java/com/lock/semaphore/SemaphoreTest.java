@@ -6,21 +6,21 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * 信号量锁
- * 
+ *
  * @author onlyone
  */
 @Slf4j
 public class SemaphoreTest implements Runnable {
 
-    private ResourceManage resourceManage;
-    private int            userId;
-    private CountDownLatch countDownLatch;
+	private ResourceManage resourceManage;
+	private int userId;
+	private CountDownLatch countDownLatch;
 
-    public SemaphoreTest(ResourceManage resourceManage, int userId, CountDownLatch countDownLatch){
-        this.resourceManage = resourceManage;
-        this.userId = userId;
-        this.countDownLatch = countDownLatch;
-    }
+	public SemaphoreTest(ResourceManage resourceManage, int userId, CountDownLatch countDownLatch) {
+		this.resourceManage = resourceManage;
+		this.userId = userId;
+		this.countDownLatch = countDownLatch;
+	}
 
 	@Override
 	public void run() {
@@ -30,22 +30,21 @@ public class SemaphoreTest implements Runnable {
 			e.printStackTrace();
 		}
 
-		log.debug("userId:" + userId + "准备使用资源...");
+		log.debug("userId:{}准备使用资源...", userId);
 		resourceManage.useResource(userId);
-		log.debug("userId:" + userId + "使用资源完毕...");
 	}
 
-    public static void main(String[] args) throws InterruptedException {
-        ResourceManage resourceManage = new ResourceManage();
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        for (int i = 1; i <= 30; i++) {
-            new Thread(new SemaphoreTest(resourceManage, i, countDownLatch)).start(); // 创建多个资源使用者
-        }
+	public static void main(String[] args) throws InterruptedException {
+		ResourceManage resourceManage = new ResourceManage();
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		for (int i = 1; i <= 30; i++) {
+			new Thread(new SemaphoreTest(resourceManage, i, countDownLatch)).start(); // 创建多个资源使用者
+		}
 
-        countDownLatch.countDown();
+		countDownLatch.countDown();
 
-        // 主线程阻塞，防止jvm提早退出
+		// 主线程阻塞，防止jvm提早退出
 		Thread.sleep(15000);
 
-    }
+	}
 }

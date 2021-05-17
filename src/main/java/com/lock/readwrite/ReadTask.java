@@ -34,19 +34,17 @@ public class ReadTask implements Runnable {
 		}
 
 		log.debug(" 尝试请求read锁,,,,,,,");
+
 		readLock.lock();
-
-		log.debug(" 已拿到read锁，开始处理业务");
-
-		// 模拟业务处理
 		try {
+			log.debug(" 已拿到read锁，开始处理业务");
 			Thread.sleep(new Random().nextInt(500));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} finally {
+			readLock.unlock();
+			log.debug(" 释放read锁！！！！！！！！！！！！");
 		}
-
-		log.debug(" 释放read锁！！！！！！！！！！！！");
-		readLock.unlock();
 
 	}
 }

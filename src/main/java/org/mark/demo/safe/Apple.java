@@ -1,5 +1,7 @@
 package org.mark.demo.safe;
 
+import lombok.Data;
+
 /**
  * @FileName Apple
  * @Description TODO
@@ -7,19 +9,13 @@ package org.mark.demo.safe;
  * @Date 2020-06-09
  * @Version 1.0
  */
+@Data
 public class Apple {
 
-	String colour;
+	String color;
 
-	public Apple(String colour) {
-		this.colour = colour;
+	public Apple(String color) {
+		this.color = color;
 	}
 
-	public String getColour() {
-		return colour;
-	}
-
-	public void setColour(String colour) {
-		this.colour = colour;
-	}
 }

@@ -30,7 +30,7 @@ public class ThreadLocalDemo {
 				for (int j = 0; j < 4; j++) {
 					add("" + String.valueOf(j));
 				}
-				set("hello world");
+				set(new StringBuilder("hello world"));
 				countDownLatch.countDown();
 			}).start();
 		}
@@ -44,17 +44,15 @@ public class ThreadLocalDemo {
 		print();
 	}
 
+	public static void set(StringBuilder words) {
+		THREAD_LOCAL_DATA.set(words);
+		print();
+	}
+
 	public static void print() {
-		log.debug("Thread name:{} , ThreadLocal hashcode:{}, Instance hashcode:{}, Value:{}",
-				Thread.currentThread().getName(),
+		log.debug("ThreadLocal hashcode:{}, Instance hashcode:{}, Value:{}",
 				THREAD_LOCAL_DATA.hashCode(),
 				THREAD_LOCAL_DATA.get().hashCode(),
 				THREAD_LOCAL_DATA.get().toString());
 	}
-
-	public static void set(String words) {
-		THREAD_LOCAL_DATA.set(new StringBuilder(words));
-		print();
-	}
-
 }

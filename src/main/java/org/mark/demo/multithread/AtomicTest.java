@@ -18,10 +18,10 @@ public class AtomicTest extends Template {
 		super(_id, _round, _threadNum, _cb);
 	}
 
-	@Override
 	/**
 	 * synchronized关键字不在方法签名里面，所以不涉及重载问题
 	 */
+	@Override
 	long getTotal() {
 		return super.totalAtmoic.get();
 	}

@@ -8,11 +8,11 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class ResourceManage {
 
-	private final Semaphore     semaphore;
-	private boolean             resourceArray[];
+	private final Semaphore semaphore;
+	private boolean resourceArray[];
 	private final ReentrantLock lock;
 
-	public ResourceManage(){
+	public ResourceManage() {
 		// 存放状态
 		this.resourceArray = new boolean[10];
 		// 控制10个共享资源的使用，使用先进先出的公平模式进行共享;公平模式的信号量，先来的先获得信号量
@@ -32,7 +32,7 @@ public class ResourceManage {
 			semaphore.acquire();
 
 			int id = getResourceId();
-			log.debug("userId:" + userId + "正在使用资源，资源id:" + id);
+			log.debug("userId:{}正在使用资源，资源id:{}", userId, id);
 			// do something，相当于于使用资源
 			Thread.sleep(100);
 			// 退出
@@ -42,18 +42,19 @@ public class ResourceManage {
 		} finally {
 			// 释放信号量，计数器加1
 			semaphore.release();
+			log.debug("userId:{}释放资源", userId);
 		}
 	}
 
 	private int getResourceId() {
-		int id = -1;
+		int index = -1;
 		lock.lock();
 		try {
 			// lock.lock();//虽然使用了锁控制同步，但由于只是简单的一个数组遍历，效率还是很高的，所以基本不影响性能。
 			for (int i = 0; i < 10; i++) {
 				if (resourceArray[i]) {
 					resourceArray[i] = false;
-					id = i;
+					index = i;
 					break;
 				}
 			}
@@ -62,6 +63,6 @@ public class ResourceManage {
 		} finally {
 			lock.unlock();
 		}
-		return id;
+		return index;
 	}
 }

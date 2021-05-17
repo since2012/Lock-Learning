@@ -1,4 +1,4 @@
-package org.mark.demo.multithread.threadpool;
+package org.mark.demo.threadpool;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 /**
  * @FileName PoolTest
  * @Description 线程池不允许使用Executors去创建，而是通过ThreadPoolExecutor的方法，这样的处理可以更加明白线程池的运行规则，规避
- * 资源耗尽的风险，个方法的弊端
+ * 资源耗尽的风险，这几个方法的弊端
  * 1）newFixedThreadPool和newSingleThreadExecutor:堆积的请求处理队列可能会消耗非常大的内存，甚至OOM
  * 2）newCachedThreadPool和newScheduledThreadPool:线程最大数时Integer.MAX_VALUE,可能创建数量非常多的线程，甚至OOM
  * 总结下来：线程过少导致处理队列过长；线程过多也会出现问题
@@ -29,21 +29,41 @@ public class PoolTest {
 	public void testCache() {
 
 		ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
-//		CountDownLatch countDownLatch = new CountDownLatch(1);
 		for (int i = 0; i < 1000; i++) {
 			final int index = i;
 
 			cachedThreadPool.execute(() -> {
-//				try {
-//					countDownLatch.await();
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
 				log.debug("{}", index);
 			});
 		}
 
-//		countDownLatch.countDown();
+		try {
+			new CountDownLatch(1).await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCacheLatch() {
+
+		ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		for (int i = 0; i < 1000; i++) {
+			final int index = i;
+
+			cachedThreadPool.execute(() -> {
+				try {
+					countDownLatch.await();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				log.debug("{}", index);
+			});
+		}
+
+		countDownLatch.countDown();
 		try {
 			new CountDownLatch(1).await();
 		} catch (InterruptedException e) {
@@ -132,7 +152,7 @@ public class PoolTest {
 	 * corePoolSize小于所需线程数时，正在执行的数量以corePoolSize为准
 	 */
 	@Test
-	public void testSchedule2() {
+	public void testSchedule() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
 		ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(4);
